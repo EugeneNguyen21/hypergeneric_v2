@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Operating Console - Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .tab-content {
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+        .nav-tabs .nav-link {
+            color: #495057;
+        }
+        .nav-tabs .nav-link.active {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Operating Console</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/operatingconsole/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">Admin Dashboard</h2>
+        
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="datasources-tab" data-bs-toggle="tab" 
+                        data-bs-target="#datasources" type="button" role="tab">
+                    Datasources
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="properties-tab" data-bs-toggle="tab" 
+                        data-bs-target="#properties" type="button" role="tab">
+                    Advanced Properties
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" 
+                        data-bs-target="#jobs" type="button" role="tab">
+                    Jobs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="logs-tab" data-bs-toggle="tab" 
+                        data-bs-target="#logs" type="button" role="tab">
+                    Logs
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="folders-tab" data-bs-toggle="tab" 
+                        data-bs-target="#folders" type="button" role="tab">
+                    Folders
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabContent">
+            <!-- Datasources Tab -->
+            <div class="tab-pane fade show active" id="datasources" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">Managed Datasources</h5>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDatasourceModal">
+                                <i class="bi bi-plus-lg"></i> Add Datasource
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Users</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Production DB</td>
+                                        <td>PostgreSQL</td>
+                                        <td><span class="badge bg-success">Active</span></td>
+                                        <td>15</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="/hypergeneric/production-db" class="btn btn-sm btn-primary">Access</a>
+                                                <button class="btn btn-sm btn-info">Edit</button>
+                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Test Environment</td>
+                                        <td>MySQL</td>
+                                        <td><span class="badge bg-warning">Maintenance</span></td>
+                                        <td>8</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="/hypergeneric/test-env" class="btn btn-sm btn-primary">Access</a>
+                                                <button class="btn btn-sm btn-info">Edit</button>
+                                                <button class="btn btn-sm btn-danger">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Properties Tab -->
+            <div class="tab-pane fade" id="properties" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">System Properties</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Max Memory</td>
+                                        <td>2048MB</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Thread Pool Size</td>
+                                        <td>10</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary">Edit</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs Tab -->
+            <div class="tab-pane fade" id="jobs" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Jobs</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Job ID</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>JOB-001</td>
+                                        <td>Data Import</td>
+                                        <td><span class="badge bg-success">Running</span></td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: 75%">75%</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger">Stop</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div class="tab-pane fade" id="logs" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">System Logs</h5>
+                        <div class="mb-3">
+                            <select class="form-select">
+                                <option>System Log</option>
+                                <option>Error Log</option>
+                                <option>Access Log</option>
+                            </select>
+                        </div>
+                        <div class="bg-dark text-light p-3 rounded" style="height: 300px; overflow-y: auto;">
+                            <pre>[2024-04-05 23:45:12] INFO: System started
+[2024-04-05 23:45:13] INFO: Initializing components
+[2024-04-05 23:45:14] INFO: All services running</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Folders Tab -->
+            <div class="tab-pane fade" id="folders" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">System Folders</h5>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-folder"></i>
+                                        <span class="ms-2">Configuration Files</span>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-primary">Open</button>
+                                        <button class="btn btn-sm btn-secondary">Properties</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="bi bi-folder"></i>
+                                        <span class="ms-2">Data Storage</span>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-primary">Open</button>
+                                        <button class="btn btn-sm btn-secondary">Properties</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Datasource Modal -->
+    <div class="modal fade" id="addDatasourceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Datasource</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="alertPlaceholder"></div>
+                    <form id="datasourceForm" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="dsName" class="form-label">Datasource Name</label>
+                            <input type="text" class="form-control" id="dsName" name="dsName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dbType" class="form-label">Database Type</label>
+                            <select class="form-select" id="dbType" name="dbType" required>
+                                <option value="">Select Database Type</option>
+                                <option value="MYSQL">MySQL</option>
+                                <option value="POSTGRESQL">PostgreSQL</option>
+                                <option value="ORACLE">Oracle</option>
+                                <option value="SQLSERVER">SQL Server</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="driver" class="form-label">JDBC Driver</label>
+                            <input type="text" class="form-control" id="driver" name="driver" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="connectionUrl" class="form-label">Connection URL</label>
+                            <input type="text" class="form-control" id="connectionUrl" name="connectionUrl" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info" id="testConnection">Test Connection</button>
+                    <button type="button" class="btn btn-primary" id="saveConnection">Save Connection</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Get form elements
+            const form = document.getElementById('datasourceForm');
+            const testBtn = document.getElementById('testConnection');
+            const saveBtn = document.getElementById('saveConnection');
+            const alertPlaceholder = document.getElementById('alertPlaceholder');
+            const dbTypeSelect = document.getElementById('dbType');
+            const driverInput = document.getElementById('driver');
+            const urlInput = document.getElementById('connectionUrl');
+            const modal = new bootstrap.Modal(document.getElementById('addDatasourceModal'));
+
+            // Helper function to show alerts
+            function showAlert(message, type) {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = [
+                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                    `   <div>${message}</div>`,
+                    '   <button type="button" class="btn-close" data-bs-dismiss="alert"></button>',
+                    '</div>'
+                ].join('');
+                alertPlaceholder.innerHTML = '';
+                alertPlaceholder.append(wrapper);
+            }
+
+            // Update driver and URL template based on database type
+            dbTypeSelect.addEventListener('change', function() {
+                const dbType = this.value;
+                switch(dbType) {
+                    case 'MYSQL':
+                        driverInput.value = 'com.mysql.cj.jdbc.Driver';
+                        urlInput.value = 'jdbc:mysql://localhost:3306/dbname';
+                        break;
+                    case 'POSTGRESQL':
+                        driverInput.value = 'org.postgresql.Driver';
+                        urlInput.value = 'jdbc:postgresql://localhost:5432/dbname';
+                        break;
+                    case 'ORACLE':
+                        driverInput.value = 'oracle.jdbc.OracleDriver';
+                        urlInput.value = 'jdbc:oracle:thin:@localhost:1521:dbname';
+                        break;
+                    case 'SQLSERVER':
+                        driverInput.value = 'com.microsoft.sqlserver.jdbc.SQLServerDriver';
+                        urlInput.value = 'jdbc:sqlserver://localhost:1433;databaseName=dbname';
+                        break;
+                    default:
+                        driverInput.value = '';
+                        urlInput.value = '';
+                }
+            });
+
+            // Test connection
+            testBtn.addEventListener('click', function() {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                fetch('/operatingconsole/datasource/test-connection', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    showAlert(result.message, result.status === 'success' ? 'success' : 'danger');
+                })
+                .catch(error => {
+                    showAlert('Error testing connection: ' + error, 'danger');
+                });
+            });
+
+            // Save configuration
+            saveBtn.addEventListener('click', function() {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                fetch('/operatingconsole/datasource/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        showAlert(result.message, 'success');
+                        setTimeout(() => {
+                            modal.hide();
+                            // Reload the datasources table
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showAlert(result.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showAlert('Error saving configuration: ' + error, 'danger');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
