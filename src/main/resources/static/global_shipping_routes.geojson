@@ -1,0 +1,180 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Trans Pacific",
+        "description": "Major shipping route connecting Asia with North America",
+        "volume": "very high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [120.0000, 30.0000],
+          [140.0000, 35.0000],
+          [160.0000, 40.0000],
+          [170.0000, 40.0000],
+          [180.0000, 40.0000],
+          [190.0000, 40.0000],
+          [210.0000, 40.0000],
+          [230.0000, 40.0000],
+          [240.0000, 35.0000],
+          [242.0000, 33.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "North Pacific",
+        "description": "Shipping route connecting East Asia with Alaska and Canada",
+        "volume": "high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [135.0000, 35.0000],
+          [150.0000, 45.0000],
+          [170.0000, 50.0000],
+          [180.0000, 55.0000],
+          [190.0000, 55.0000],
+          [210.0000, 55.0000],
+          [230.0000, 50.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vietnam US",
+        "description": "Shipping route connecting Vietnam with the United States",
+        "volume": "medium",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [108.0000, 16.0000],
+          [120.0000, 20.0000],
+          [140.0000, 25.0000],
+          [160.0000, 25.0000],
+          [170.0000, 25.0000],
+          [180.0000, 25.0000],
+          [190.0000, 25.0000],
+          [210.0000, 25.0000],
+          [230.0000, 33.0000],
+          [242.0000, 33.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Asia Europe",
+        "description": "Primary shipping route connecting East Asia with Europe via Suez Canal",
+        "volume": "very high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [120.0000, 30.0000],
+          [115.0000, 22.0000],
+          [110.0000, 15.0000],
+          [104.0000, 10.0000],
+          [100.0000, 5.0000],
+          [95.0000, 0.0000],
+          [85.0000, -5.0000],
+          [75.0000, 5.0000],
+          [65.0000, 12.0000],
+          [55.0000, 15.0000],
+          [40.0000, 20.0000],
+          [32.0000, 29.0000],
+          [30.0000, 31.0000],
+          [25.0000, 35.0000],
+          [15.0000, 36.0000],
+          [5.0000, 37.0000],
+          [-5.0000, 36.0000],
+          [-10.0000, 40.0000],
+          [0.0000, 50.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "North Atlantic",
+        "description": "Major shipping route connecting Europe with North America",
+        "volume": "very high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-10.0000, 50.0000],
+          [-20.0000, 45.0000],
+          [-40.0000, 40.0000],
+          [-70.0000, 40.0000],
+          [-75.0000, 39.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South America Europe",
+        "description": "Shipping route connecting South America with Europe",
+        "volume": "high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-50.0000, -30.0000],
+          [-40.0000, -10.0000],
+          [-20.0000, 0.0000],
+          [-10.0000, 10.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cape Route",
+        "description": "Shipping route around the Cape of Good Hope",
+        "volume": "medium",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [20.0000, -30.0000],
+          [30.0000, -35.0000],
+          [40.0000, -30.0000],
+          [50.0000, -20.0000]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Australia Asia",
+        "description": "Shipping route connecting Australia with Asia",
+        "volume": "high",
+        "type": "container"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [115.0000, -30.0000],
+          [120.0000, -20.0000],
+          [130.0000, -10.0000],
+          [140.0000, 0.0000]
+        ]
+      }
+    }
+  ]
+}
