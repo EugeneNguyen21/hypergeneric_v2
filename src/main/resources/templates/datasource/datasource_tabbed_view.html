@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${datasourceName + ' - Dashboard'}">Dashboard</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body, .container-fluid, .row, .col-md-11, .col-md-1 {
+            height: 100vh !important;
+            min-height: 100vh !important;
+        }
+        #map {
+            height: 100vh !important;
+            min-height: 100vh !important;
+            width: 100%;
+            min-width: 900px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .sidebar {
+            background: #222;
+            color: #fff;
+            height: 100vh;
+            min-width: 40px;
+            max-width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+        }
+        .sidebar-header {
+            width: 100%;
+            padding: 18px 0 8px 0;
+            text-align: center;
+            border-bottom: 1px solid #444;
+        }
+        .sidebar-header .datasource-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .sidebar-header .welcome {
+            font-size: 0.95rem;
+            color: #bbb;
+        }
+        .sidebar-header .logout-link {
+            font-size: 0.95rem;
+            color: #f55;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .sidebar-header .logout-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .sidebar-icon {
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            color: #fff;
+        }
+        .sidebar-icon.active, .sidebar-icon:hover {
+            background: #e9ecef;
+            color: #222;
+        }
+        .sidebar-tooltip {
+            visibility: hidden;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 2px 8px;
+            position: absolute;
+            z-index: 10;
+            left: 48px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .sidebar-icon:hover .sidebar-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .map-action-btn {
+            font-size: 1.1rem !important;
+            padding: 2px 0 !important;
+            margin-bottom: 4px !important;
+            min-width: 32px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            position: relative;
+        }
+        .map-action-btn i { margin: 0; }
+        .map-action-btn .spinner-border {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 28px;
+            height: 28px;
+            border-width: 0.18em;
+            z-index: 2;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+        }
+        .map-action-btn[disabled] {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* New CSS for sub-configurations */
+        .config-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .config-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .sub-config {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .sub-config.show {
+            display: block;
+        }
+        .sub-config-item {
+            padding: 8px 15px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .sub-config-item:hover {
+            background: #e9ecef;
+        }
+        .sub-config-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: #6c757d;
+        }
+        
+        /* Section header styles */
+        .section-header {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .section-header:hover {
+            background-color: #f8f9fa;
+        }
+        .section-header .fa-chevron-down,
+        .section-header .fa-chevron-up {
+            transition: transform 0.3s;
+        }
+        
+        /* Add scrolling for utilities page */
+        .utilities-content {
+            max-height: 100vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* Reduce spacing between sections */
+        .card.border-0.shadow-sm {
+            margin-bottom: 0.5rem !important;
+        }
+        .row.mb-4, .row.mb-3, .row.mb-2 {
+            margin-bottom: 0.25rem !important;
+        }
+        
+        /* Further reduce section and card spacing */
+        .card-header {
+            padding: 0.5rem 1rem !important;
+        }
+        .card-body {
+            padding: 0.75rem !important;
+        }
+        .config-card {
+            margin-bottom: 0.25rem !important;
+        }
+        .sub-config {
+            margin-top: 0.25rem !important;
+            padding: 0.5rem !important;
+        }
+        .sub-config-item {
+            padding: 0.4rem 0.75rem !important;
+            margin-bottom: 0.25rem !important;
+        }
+        
+        /* Reduce spacing between collapsible sections */
+        .card.border-0.shadow-sm {
+            margin-bottom: 0.5rem !important;
+        }
+        
+        /* Style for section headers */
+        .section-header {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .section-header:hover {
+            background-color: #f8f9fa !important;
+        }
+        
+        /* Rotate chevron when expanded */
+        .section-header[aria-expanded="true"] .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        
+        /* Transition for smooth rotation */
+        .fa-chevron-down {
+            transition: transform 0.3s;
+        }
+        
+        /* Reduce spacing in subcategories */
+        .sub-config {
+            margin-top: 0.2rem;
+            padding-left: 1rem;
+        }
+        
+        .sub-config-item {
+            padding: 0.25rem 0.5rem;
+        }
+        
+        /* Reduce spacing in utility content */
+        .utilities-content .row.mb-2 {
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Section box styles to make them display horizontally */
+        .section-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-start;
+        }
+        .section-box {
+            flex: 0 0 calc(19% - 8px);
+            min-width: 180px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+        .section-box:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .section-header {
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: background-color 0.2s;
+            padding: 8px;
+        }
+        .section-header:hover {
+            background-color: #e9ecef;
+        }
+        .section-header h5 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        .section-header .fa-chevron-down {
+            transition: transform 0.3s ease;
+        }
+        .section-header[aria-expanded="true"] .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+        .config-items {
+            padding: 8px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .collapse.show .config-items {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .config-item {
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+        }
+        .config-item:hover {
+            background-color: #f1f3f5;
+        }
+        .config-item i {
+            width: 16px;
+            color: #6c757d;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid" style="height:100vh;min-height:100vh;">
+        <div class="row" style="height:100vh;min-height:100vh;">
+            <!-- Sidebar with header and icons -->
+            <div class="col-md-1 sidebar p-0">
+                <div class="sidebar-header">
+                    <div class="datasource-name">HG</div>
+                    <a class="logout-link" th:href="@{/hypergeneric/{name}/logout(name=${datasourceName})}">Logout</a>
+                </div>
+                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-start pt-3 w-100">
+                    <div th:each="tab : ${tabs}" class="position-relative w-100 d-flex flex-column align-items-center">
+                        <a th:class="'sidebar-icon nav-link mb-1 ' + (${tab == activeTab ? 'active' : ''})"
+                           th:href="@{/hypergeneric/{name}/tab/{tab}(name=${datasourceName},tab=${tab})}"
+                           th:switch="${tab}">
+                            <i th:case="'dashboard'" class="fas fa-tachometer-alt"></i>
+                            <i th:case="'navigator'" class="fas fa-compass"></i>
+                            <i th:case="'search'" class="fas fa-search"></i>
+                            <i th:case="'creation'" class="fas fa-plus-square"></i>
+                            <i th:case="'utilities'" class="fas fa-tools"></i>
+                            <i th:case="'profile'" class="fas fa-user"></i>
+                            <i th:case="'map'" class="fas fa-ship"></i>
+                        </a>
+                        <span class="sidebar-tooltip" th:text="${#strings.capitalize(tab)}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-11" style="height:100vh;min-height:100vh;">
+                <!-- Dashboard Tab -->
+                <div th:if="${activeTab == 'dashboard'}" class="tab-content">
+                    <h2>Dashboard</h2>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Overview</h5>
+                                    <p class="card-text">Welcome to your database dashboard.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigator Tab -->
+                <div th:if="${activeTab == 'navigator'}" class="tab-content">
+                    <h2>Navigator</h2>
+                    <!-- Add navigator content -->
+                </div>
+
+                <!-- Search Tab -->
+                <div th:if="${activeTab == 'search'}" class="tab-content">
+                    <h2>Search</h2>
+                    <!-- Add search content -->
+                </div>
+
+                <!-- Creation Tab -->
+                <div th:if="${activeTab == 'creation'}" class="tab-content">
+                    <h2>Creation</h2>
+                    <!-- Add creation content -->
+                </div>
+
+                <!-- Utilities Tab -->
+                <div th:if="${activeTab == 'utilities'}" class="tab-content p-3 utilities-content">
+                    <h2 class="mb-3">Utilities & Configuration</h2>
+                    
+                    <!-- Horizontal Section Container -->
+                    <div class="section-container d-flex flex-wrap justify-content-between">
+                        <!-- User Management Section -->
+                        <div class="section-box">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#userManagementContent" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center p-3">
+                                    <h5 class="mb-0">User Management</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="userManagementContent">
+                                <div class="config-items">
+                                    <div class="config-item">
+                                        <i class="fas fa-users"></i> <span>User Accounts</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-user-shield"></i> <span>Permissions</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-user-tag"></i> <span>Roles</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-user-clock"></i> <span>Activity Log</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Analytics & Navigation Section -->
+                        <div class="section-box">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#analyticsContent" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center p-3">
+                                    <h5 class="mb-0">Analytics & Navigation</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="analyticsContent">
+                                <div class="config-items">
+                                    <div class="config-item">
+                                        <i class="fas fa-chart-line"></i> <span>Usage Statistics</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-compass"></i> <span>Navigation Settings</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-map-marked-alt"></i> <span>Map Configuration</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-chart-pie"></i> <span>Report Builder</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Blueprint and Metadata Section -->
+                        <div class="section-box">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#documentContent" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center p-3">
+                                    <h5 class="mb-0">Blueprint and Metadata</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="documentContent">
+                                <div class="config-items">
+                                    <div class="config-item">
+                                        <i class="fas fa-file-alt"></i> <span>Blueprint</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-file-import"></i> <span>Field</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-project-diagram"></i> <span>Workflow</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-user-secret"></i> <span>Confidentiality</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Configuration & Settings Section -->
+                        <div class="section-box">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#configSettingsContent" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center p-3">
+                                    <h5 class="mb-0">Configuration & Settings</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="configSettingsContent">
+                                <div class="config-items">
+                                    <div class="config-item">
+                                        <i class="fas fa-database"></i> <span>Database Settings</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-palette"></i> <span>UI Preferences</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-language"></i> <span>Localization</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-shield-alt"></i> <span>Security Settings</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reference Tools Section -->
+                        <div class="section-box">
+                            <div class="section-header" data-bs-toggle="collapse" data-bs-target="#referencesContent" aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center p-3">
+                                    <h5 class="mb-0">Reference Tools</h5>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                            <div class="collapse" id="referencesContent">
+                                <div class="config-items">
+                                    <div class="config-item">
+                                        <i class="fas fa-book"></i> <span>Documentation</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-question-circle"></i> <span>Help Center</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-info-circle"></i> <span>About</span>
+                                    </div>
+                                    <div class="config-item">
+                                        <i class="fas fa-tools"></i> <span>Developer Tools</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tab -->
+                <div th:if="${activeTab == 'profile'}" class="tab-content">
+                    <h2>Profile</h2>
+                    <!-- Add profile content -->
+                </div>
+
+                <!-- Map Tab -->
+                <div th:if="${activeTab == 'map'}" class="tab-content" style="height:100vh;min-height:100vh;position:relative;overflow:hidden;">
+                    <div class="d-flex justify-content-between align-items-start" style="height:calc(100vh - 40px);min-height:calc(100vh - 40px);width:100%;">
+                        <div id="map" style="height:calc(100vh - 40px) !important;width:calc(100% - 35px) !important;"></div>
+                        <div class="d-flex flex-column align-items-end ms-2" style="min-width:30px;position:absolute;top:10px;right:5px;z-index:10;">
+                            <button id="clearMap" class="btn btn-danger btn-sm map-action-btn" style="width:26px;height:26px;min-width:26px;" title="Clear Map"><i class="fas fa-eraser" style="font-size:0.9rem"></i></button>
+                            <button id="seaRouteMode" class="btn btn-primary btn-sm map-action-btn" style="width:26px;height:26px;min-width:26px;" title="Create Sea Route"><i class="fas fa-route" style="font-size:0.9rem"></i></button>
+                            <button id="saveSeaRoute" class="btn btn-success btn-sm map-action-btn" style="display:none;width:26px;height:26px;min-width:26px;" title="Save Sea Route"><i class="fas fa-save" style="font-size:0.9rem"></i></button>
+                            <button id="animateShip" class="btn btn-info btn-sm map-action-btn position-relative" style="width:26px;height:26px;min-width:26px;" title="Animate Ship (VN to US)" disabled>
+                                <span class="spinner-border spinner-border-sm position-absolute d-none" id="animateSpinner" style="top:1px;left:1px;width:24px;height:24px;pointer-events:none;z-index:2;" role="status" aria-hidden="true"></span>
+                                <i class="fas fa-ship position-relative" style="z-index:3;font-size:0.9rem"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="mapDebug" class="mt-2 small text-muted" style="height:30px;overflow-y:auto;padding:5px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css' type='text/css' />
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+    <script th:inline="javascript">
+        // Use Thymeleaf's inline processing to get the correct URLs
+        const vietnamPortsUrl = /*[[@{/vietnam_ports.geojson}]]*/ '/vietnam_ports.geojson';
+        const shippingRoutesUrl = /*[[@{/global_shipping_routes.geojson}]]*/ '/global_shipping_routes.geojson';
+        const eastFacingShipUrl = /*[[@{/east_facing_ship.png}]]*/ '/east_facing_ship.png';
+        const westFacingShipUrl = /*[[@{/west_facing_ship.png}]]*/ '/west_facing_ship.png';
+        
+        // Update Mapbox token to a public demo token that's guaranteed to work
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZXVnZW5lbmd1eWVuIiwiYSI6ImNtOXo5OHdxajBpdjgybHNkb2dteHpiOGsifQ.09yjZss9L31zEdvdQL_tzA';
+        
+        // Debug flag to track map initialization
+        let mapInitialized = false;
+        
+        // Variables for the map and controls
+        let map, directionsControl, markers = [], seaRouteMarkers = [], seaRoutePolylines = [], seaRoutes = [], seaRouteDraft = [], seaRouteDraftLine = null, seaRouteMode = false;
+        
+        // Animation variables
+        let shipElement = null;
+        let animationFrameId = null;
+        let isAnimating = false;
+        let step = 0;
+        let routeFeature = null;
+        let cameraLngUnwrapped = null; // Track unwrapped camera longitude
+        function unwrapToPrev(prev, next) {
+            let delta = next - prev;
+            if (delta > 180) next -= 360;
+            if (delta < -180) next += 360;
+            return next;
+        }
+        
+        // Define fixed points for the ship animation if GeoJSON fails
+        const customRoute = [
+            [106.7316, 10.8231], // Ho Chi Minh City
+            [115.0, 15.0],        // South China Sea
+            [125.0, 20.0],        // East of Philippines
+            [145.0, 30.0],        // Western Pacific
+            [170.0, 35.0],        // Central Pacific
+            [-170.0, 35.0],       // East Pacific (crossing the antimeridian)
+            [-150.0, 30.0],       // Near Hawaii
+            [-130.0, 35.0],       // Northeast Pacific
+            [-118.2437, 34.0522]  // Los Angeles
+        ];
+        
+        // Preload ship images to avoid flickering during animation
+        const eastShipImg = new Image();
+        eastShipImg.src = eastFacingShipUrl;
+        const westShipImg = new Image();
+        westShipImg.src = westFacingShipUrl;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add debugging info to help troubleshoot map rendering issues
+            console.log('DOM Content Loaded - Checking for map element');
+            document.getElementById('mapDebug').innerHTML = 'Initializing map...';
+            
+            if (document.getElementById('map')) {
+                console.log('Map element found - Attempting to initialize MapBox');
+                try {
+                    // Show East Asia and make globe smaller by default
+                    document.getElementById('mapDebug').innerHTML += 'Creating map instance...';
+                    map = new mapboxgl.Map({
+                        container: 'map',
+                        style: 'mapbox://styles/mapbox/streets-v12',
+                        center: [120, 30], // East Asia
+                        zoom: 2.2,
+                        projection: 'globe',
+                        renderWorldCopies: true
+                    });
+                    
+                    // Add debugging for map creation
+                    console.log('MapBox map instance created');
+                    document.getElementById('mapDebug').innerHTML += '<br>Map created successfully!';
+                    
+                    // Add navigation controls
+                    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+                    
+                    // Error logging for map errors
+                    map.on('error', function(e) {
+                        console.error('Mapbox error:', e);
+                        document.getElementById('mapDebug').innerHTML += '<br><span style="color:red">Map error: ' + e.error + '</span>';
+                    });
+                    
+                    // Add a specific listener for style load
+                    map.on('style.load', function() {
+                        console.log('Map style loaded successfully');
+                        document.getElementById('mapDebug').innerHTML += '<br><span style="color:green">Map style loaded!</span>';
+                    });
+                    
+                    // When map loads, fetch and display GeoJSON data
+                    map.on('load', function() {
+                        try {
+                            // First fetch Vietnam ports data
+                            fetch(vietnamPortsUrl)
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to load Vietnam ports: ' + response.status);
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (map.getSource('vietnam-ports')) return;
+                                    
+                                    map.addSource('vietnam-ports', {
+                                        type: 'geojson',
+                                        data: data
+                                    });
+                                    
+                                    map.addLayer({
+                                        'id': 'vietnam-ports-layer',
+                                        'type': 'circle',
+                                        'source': 'vietnam-ports',
+                                        'paint': {
+                                            'circle-radius': 5,
+                                            'circle-color': '#e67e22',
+                                            'circle-stroke-width': 1,
+                                            'circle-stroke-color': '#ffffff'
+                                        }
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error("Error loading Vietnam ports:", error);
+                                });
+                            
+                            // Then fetch shipping routes data
+                            fetch(shippingRoutesUrl)
+                                .then(response => {
+                                    if (!response.ok) throw new Error('Failed to load shipping routes: ' + response.status);
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (map.getSource('shipping-routes')) return;
+                                    map.addSource('shipping-routes', {
+                                        type: 'geojson',
+                                        data: data
+                                    });
+                                    // Try to find the Vietnam-US route
+                                    const vnUsRoute = data.features.find(feature => feature.properties.name === 'Vietnam US');
+                                    if (vnUsRoute) {
+                                        routeFeature = vnUsRoute;
+                                        document.getElementById('mapDebug').innerHTML += '<span style="color:green">routeFeature set from GeoJSON</span><br>';
+                                    } else {
+                                        routeFeature = {
+                                            type: "Feature",
+                                            properties: { name: "Vietnam US", type: "shipping" },
+                                            geometry: {
+                                                type: "LineString",
+                                                coordinates: customRoute
+                                            }
+                                        };
+                                        document.getElementById('mapDebug').innerHTML += '<span style="color:orange">routeFeature set to fallback</span><br>';
+                                    }
+                                    document.getElementById('animateShip').disabled = false;
+                                    
+                                    // Define the route types with their colors
+                                    const routeTypes = [
+                                        {
+                                            id: 'trans-pacific',
+                                            filter: ['==', ['get', 'name'], 'Trans Pacific'],
+                                            color: '#e74c3c', // Red
+                                            width: 4
+                                        },
+                                        {
+                                            id: 'north-pacific',
+                                            filter: ['==', ['get', 'name'], 'North Pacific'],
+                                            color: '#3498db', // Blue
+                                            width: 3
+                                        },
+                                        {
+                                            id: 'vietnam-us',
+                                            filter: ['==', ['get', 'name'], 'Vietnam US'],
+                                            color: '#2ecc71', // Green
+                                            width: 3
+                                        },
+                                        {
+                                            id: 'asia-europe',
+                                            filter: ['==', ['get', 'name'], 'Asia Europe'],
+                                            color: '#f39c12', // Orange
+                                            width: 4
+                                        },
+                                        {
+                                            id: 'north-atlantic',
+                                            filter: ['==', ['get', 'name'], 'North Atlantic'],
+                                            color: '#9b59b6', // Purple
+                                            width: 3
+                                        },
+                                        {
+                                            id: 'south-america-europe',
+                                            filter: ['==', ['get', 'name'], 'South America Europe'],
+                                            color: '#1abc9c', // Turquoise
+                                            width: 3
+                                        },
+                                        {
+                                            id: 'cape-route',
+                                            filter: ['==', ['get', 'name'], 'Cape Route'],
+                                            color: '#d35400', // Dark Orange
+                                            width: 3
+                                        },
+                                        {
+                                            id: 'australia-asia',
+                                            filter: ['==', ['get', 'name'], 'Australia Asia'],
+                                            color: '#16a085', // Sea Green
+                                            width: 3
+                                        }
+                                    ];
+                                    
+                                    // Add each route as a separate layer
+                                    routeTypes.forEach(route => {
+                                        try {
+                                            map.addLayer({
+                                                'id': 'shipping-route-' + route.id,
+                                                'type': 'line',
+                                                'source': 'shipping-routes',
+                                                'layout': {
+                                                    'line-join': 'round',
+                                                    'line-cap': 'round',
+                                                    'visibility': 'visible'
+                                                },
+                                                'paint': {
+                                                    'line-color': route.color,
+                                                    'line-width': route.width,
+                                                    'line-opacity': 0.8
+                                                },
+                                                'filter': route.filter
+                                            });
+                                        } catch (error) {
+                                            console.error("Error adding route layer:", error);
+                                        }
+                                    });
+                                    
+                                    // Add legend for routes
+                                    const legend = document.createElement('div');
+                                    legend.className = 'map-legend';
+                                    legend.style.position = 'absolute';
+                                    legend.style.bottom = '25px';
+                                    legend.style.right = '10px';
+                                    legend.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                                    legend.style.padding = '10px';
+                                    legend.style.borderRadius = '5px';
+                                    legend.style.maxWidth = '200px';
+                                    legend.style.maxHeight = '300px';
+                                    legend.style.overflowY = 'auto';
+                                    legend.style.fontSize = '12px';
+                                    legend.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+                                    
+                                    legend.innerHTML = '<h6 style="margin-top:0;font-weight:bold;">Global Shipping Routes</h6>';
+                                    
+                                    routeTypes.forEach(route => {
+                                        const item = document.createElement('div');
+                                        item.style.margin = '5px 0';
+                                        
+                                        const routeColor = document.createElement('span');
+                                        routeColor.className = 'legend-color';
+                                        routeColor.style.display = 'inline-block';
+                                        routeColor.style.width = '15px';
+                                        routeColor.style.height = '3px';
+                                        routeColor.style.backgroundColor = route.color;
+                                        routeColor.style.marginRight = '5px';
+                                        
+                                        const routeName = document.createElement('span');
+                                        routeName.innerText = route.id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                        
+                                        item.appendChild(routeColor);
+                                        item.appendChild(routeName);
+                                        legend.appendChild(item);
+                                    });
+                                    
+                                    document.getElementById('map').appendChild(legend);
+                                })
+                                .catch(error => {
+                                    console.error("Error loading shipping routes:", error);
+                                    
+                                    // Set up default route if loading fails
+                                    routeFeature = {
+                                        type: "Feature",
+                                        properties: { name: "Vietnam US", type: "shipping" },
+                                        geometry: {
+                                            type: "LineString",
+                                            coordinates: customRoute
+                                        }
+                                    };
+                                });
+                            
+                        } catch(error) {
+                            console.error("Error setting up GeoJSON:", error);
+                        }
+                    });
+                    window.mapIsLoaded = true;
+                    document.getElementById('mapDebug').innerHTML += '<span style="color:blue">mapIsLoaded set to true</span><br>';
+                    // Define ship animation functions
+                    
+
+                    // Stop any ongoing animation
+                    function stopAnimation() {
+                        if (animationFrameId) {
+                            cancelAnimationFrame(animationFrameId);
+                            animationFrameId = null;
+                        }
+                        isAnimating = false;
+                        document.getElementById('animateSpinner').classList.add('d-none');
+                        if (shipElement) {
+                            shipElement.remove();
+                            shipElement = null;
+                        }
+                    }
+                    
+                    // Create an optimized animation that properly handles the antimeridian
+                    function animateShip() {
+                        if (!routeFeature || !window.mapIsLoaded) {
+                            document.getElementById('mapDebug').innerHTML += '<span style="color:red">No routeFeature or map not loaded</span><br>';
+                            alert('No routeFeature or map not loaded');
+                            return;
+                        }
+                        stopAnimation();
+                        isAnimating = true;
+                        let coordinates = routeFeature.geometry.coordinates;
+                        if (!coordinates || coordinates.length < 2) {
+                            document.getElementById('mapDebug').innerHTML += '<span style="color:red">Vietnam-US route not found or invalid, using fallback</span><br>';
+                            coordinates = customRoute;
+                        } else {
+                            document.getElementById('mapDebug').innerHTML += '<span style="color:green">Animating Vietnam-US route with ' + coordinates.length + ' points</span><br>';
+                        }
+                        // Fit map to route
+                        const bounds = coordinates.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+                        map.fitBounds(bounds, { padding: 80, maxZoom: 4 });
+                        // Add a static marker at the start for debug
+                        const debugMarker = new mapboxgl.Marker({color: 'red'}).setLngLat(coordinates[0]).addTo(map);
+                        document.getElementById('mapDebug').innerHTML += '<span style="color:blue">Static debug marker added at ' + JSON.stringify(coordinates[0]) + '</span><br>';
+                        // Add a pin for the end location
+                        const endMarker = new mapboxgl.Marker({color: 'green'}).setLngLat(coordinates[coordinates.length-1]).addTo(map);
+                        document.getElementById('mapDebug').innerHTML += '<span style="color:green">End marker added at ' + JSON.stringify(coordinates[coordinates.length-1]) + '</span><br>';
+                        const line = turf.lineString(coordinates);
+                        const lineLength = turf.length(line, { units: 'kilometers' });
+                        const el = document.createElement('img');
+                        el.src = eastFacingShipUrl;
+                        el.style.width = '40px';
+                        el.style.height = '40px';
+                        el.style.objectFit = 'contain';
+                        el.style.pointerEvents = 'none';
+                        el.style.userSelect = 'none';
+                        el.className = 'ship-marker';
+                        shipElement = new mapboxgl.Marker({ element: el, anchor: 'center' });
+                        let startPoint = coordinates[0];
+                        let currentLng = ((((startPoint[0] + 180) % 360) + 360) % 360) - 180;
+                        cameraLngUnwrapped = startPoint[0];
+                        shipElement.setLngLat([currentLng, startPoint[1]]).addTo(map);
+                        document.getElementById('mapDebug').innerHTML += '<span style="color:purple">Ship marker added at ' + JSON.stringify([currentLng, startPoint[1]]) + '</span><br>';
+                        step = 0;
+                        const animationDuration = lineLength * 20;
+                        const totalSteps = 1000;
+                        const stepIncrement = 1 / totalSteps;
+                        let animationStarted = false;
+                        function animate() {
+                            if (!isAnimating) return;
+                            if (!animationStarted) {
+                                document.getElementById('mapDebug').innerHTML += '<span style="color:orange">Animation started</span><br>';
+                                animationStarted = true;
+                            }
+                            const alongPosition = Math.min(step, 1);
+                            const currentPoint = turf.along(line, alongPosition * lineLength, { units: 'kilometers' });
+                            let currentCoord = currentPoint.geometry.coordinates;
+                            let markerLng = ((((currentCoord[0] + 180) % 360) + 360) % 360) - 180;
+                            shipElement.setLngLat([markerLng, currentCoord[1]]);
+                            // No longer center the map on the ship as it moves
+                            document.getElementById('mapDebug').innerHTML += 'Ship at ' + JSON.stringify([markerLng, currentCoord[1]]) + '<br>';
+                            if (markerLng < currentLng) {
+                                el.src = westFacingShipUrl;
+                            } else if (markerLng > currentLng) {
+                                el.src = eastFacingShipUrl;
+                            }
+                            currentLng = markerLng;
+                            step += stepIncrement;
+                            if (step > 1) {
+                                document.getElementById('mapDebug').innerHTML += 'Animation complete<br>';
+                                // Keep the ship image at the final destination
+                                shipElement.setLngLat(coordinates[coordinates.length-1]);
+                                // Snap the map to the final position without animation to prevent globe spinning
+                                map.jumpTo({ center: coordinates[coordinates.length-1], zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch() });
+                                isAnimating = false;
+                                return;
+                            }
+                            animationFrameId = requestAnimationFrame(animate);
+                        }
+                        animate();
+                    }
+                    
+                    // Animate Ship button with spinner overlay and robust toggle
+                    let animating = false;
+                    let animationFrameId = null;
+                    const animateBtn = document.getElementById('animateShip');
+                    const spinner = document.getElementById('animateSpinner');
+                    animateBtn.onclick = function() {
+                        if (!animating) {
+                            animating = true;
+                            spinner.classList.remove('d-none');
+                            animateShip();
+                        } else {
+                            animating = false;
+                            spinner.classList.add('d-none');
+                            stopAnimation();
+                        }
+                    };
+                    
+                } catch (error) {
+                    console.error("Error initializing map:", error);
+                    document.getElementById('map').innerHTML = '<div class="alert alert-danger">Unable to load map. Error: ' + error.message + '</div>';
+                }
+            } else {
+                console.error("Map element not found");
+            }
+        });
+    </script>
+    <!-- JavaScript for Bootstrap & Sub-configurations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content loaded - Initializing utilities tab JavaScript');
+            
+            // Log active tab to check if the utilities tab is actually being set
+            const activeTab = document.querySelector('.sidebar-icon.active');
+            if (activeTab) {
+                const tabName = activeTab.querySelector('i').className;
+                console.log('Current active tab:', tabName);
+            } else {
+                console.warn('No active tab found in sidebar');
+            }
+            
+            // Check the model data to see if configSections exists
+            const configSectionsContainer = document.querySelector('.utilities-content');
+            if (configSectionsContainer) {
+                console.log('Utilities content container found');
+                const sectionElements = configSectionsContainer.querySelectorAll('.section-header');
+                console.log('Found', sectionElements.length, 'config sections');
+                sectionElements.forEach((section, index) => {
+                    console.log('Section', index + 1, ':', section.textContent.trim());
+                });
+            } else {
+                console.warn('Utilities content container not found');
+            }
+            
+            // Initialize all Bootstrap components
+            console.log('Initializing Bootstrap tooltips');
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+            
+            // Initialize main section collapsible elements
+            console.log('Initializing main section collapsible elements');
+            document.querySelectorAll('.section-header').forEach(function(header, index) {
+                const targetId = header.getAttribute('data-bs-target');
+                console.log('Section header', index + 1, 'target:', targetId);
+                
+                if (targetId) {
+                    // Make sure each main section starts expanded
+                    const section = document.querySelector(targetId);
+                    if (section) {
+                        console.log('Found target section for', targetId);
+                        section.classList.add('show');
+                        // Make chevron start as up
+                        const chevron = header.querySelector('.fas');
+                        if (chevron) {
+                            console.log('Updating chevron for section', index + 1);
+                            chevron.classList.remove('fa-chevron-down');
+                            chevron.classList.add('fa-chevron-up');
+                        } else {
+                            console.warn('No chevron icon found for section', index + 1);
+                        }
+                    } else {
+                        console.warn('Target section not found for', targetId);
+                    }
+                } else {
+                    console.warn('No data-bs-target attribute found for section header', index + 1);
+                }
+            });
+            
+            // By default, collapse all sub-configurations
+            console.log('Collapsing all sub-configurations');
+            const subConfigs = document.querySelectorAll('.sub-config');
+            console.log('Found', subConfigs.length, 'sub-configurations');
+            subConfigs.forEach(function(config, index) {
+                console.log('Collapsing sub-config', index + 1, config.id);
+                config.classList.remove('show');
+            });
+            
+            // Add click event listeners to config cards for collapsing/expanding
+            console.log('Adding click event listeners to config cards');
+            document.querySelectorAll('.config-card').forEach(function(card, index) {
+                console.log('Setting up click handler for config card', index + 1);
+                card.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default anchor behavior
+                    e.stopPropagation(); // Stop event bubbling
+                    
+                    console.log('Config card clicked:', index + 1);
+                    const target = this.getAttribute('data-bs-target');
+                    console.log('Target sub-config:', target);
+                    
+                    const subConfig = document.querySelector(target);
+                    if (subConfig) {
+                        console.log('Found target sub-config element');
+                        // Toggle the 'show' class manually
+                        if (subConfig.classList.contains('show')) {
+                            console.log('Hiding sub-config:', target);
+                            subConfig.classList.remove('show');
+                            // Update chevron icon
+                            const chevron = this.querySelector('.fas');
+                            if (chevron) {
+                                console.log('Updating chevron icon to down');
+                                chevron.classList.remove('fa-chevron-up');
+                                chevron.classList.add('fa-chevron-down');
+                            } else {
+                                console.warn('No chevron found in config card');
+                            }
+                        } else {
+                            console.log('Showing sub-config:', target);
+                            subConfig.classList.add('show');
+                            // Update chevron icon
+                            const chevron = this.querySelector('.fas');
+                            if (chevron) {
+                                console.log('Updating chevron icon to up');
+                                chevron.classList.remove('fa-chevron-down');
+                                chevron.classList.add('fa-chevron-up');
+                            } else {
+                                console.warn('No chevron found in config card');
+                            }
+                        }
+                    } else {
+                        console.error('Sub-config element not found for target:', target);
+                    }
+                });
+            });
+            
+            // Make sub-config items clickable
+            console.log('Making sub-config items clickable');
+            document.querySelectorAll('.sub-config-item').forEach(function(item, index) {
+                console.log('Setting up click handler for sub-config item', index + 1);
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent bubbling to parent
+                    // Here you would add functionality for each sub-configuration item
+                    const itemText = this.textContent.trim();
+                    console.log('Sub-config item clicked:', itemText);
+                    // For demonstration purposes, show an alert
+                    alert('You clicked: ' + itemText + '\nThis would open the corresponding configuration screen.');
+                });
+            });
+        });
+    </script>
+    <!-- Add JavaScript for icon toggling -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Setting up section header chevron toggling');
+            // Toggle chevron icons when sections are expanded/collapsed
+            const sectionHeaders = document.querySelectorAll('.section-header');
+            console.log('Found', sectionHeaders.length, 'section headers for chevron toggling');
+            
+            sectionHeaders.forEach((header, index) => {
+                console.log('Adding click handler for section header', index + 1);
+                header.addEventListener('click', function() {
+                    console.log('Section header clicked:', index + 1);
+                    const chevron = this.querySelector('.fas');
+                    if (chevron) {
+                        console.log('Found chevron in section header');
+                        if (chevron.classList.contains('fa-chevron-down')) {
+                            console.log('Changing chevron from down to up');
+                            chevron.classList.remove('fa-chevron-down');
+                            chevron.classList.add('fa-chevron-up');
+                        } else {
+                            console.log('Changing chevron from up to down');
+                            chevron.classList.remove('fa-chevron-up');
+                            chevron.classList.add('fa-chevron-down');
+                        }
+                    } else {
+                        console.warn('No chevron found in section header', index + 1);
+                    }
+                    
+                    // Debug: Check if the collapse/expand is working
+                    const targetId = this.getAttribute('data-bs-target');
+                    console.log('Target section content:', targetId);
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        console.log('Target element found. Current show state:', targetElement.classList.contains('show'));
+                        setTimeout(() => {
+                            console.log('Target element show state after timeout:', targetElement.classList.contains('show'));
+                        }, 500);
+                    } else {
+                        console.error('Target element not found for', targetId);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!-- Debugging script to help troubleshoot utilities tab issues -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Running additional diagnostics for utilities tab');
+            
+            // Check if we are on the utilities tab
+            const utilitiesTabContent = document.querySelector('.tab-content');
+            if (utilitiesTabContent) {
+                console.log('Tab content found, checking if utilities tab is active');
+                if (utilitiesTabContent.style.display === 'none') {
+                    console.warn('Tab content is hidden');
+                }
+            }
+            
+            // Add a manual trigger to show the utilities tab content
+            const utilitiesTab = document.querySelector('.sidebar-icon[href*="utilities"]');
+            if (utilitiesTab) {
+                console.log('Found utilities tab in sidebar');
+                
+                // Add debug classes to make elements more visible for inspection
+                document.querySelectorAll('.section-header').forEach(function(header) {
+                    header.style.border = '1px solid red';
+                    console.log('Added debug border to section header:', header.textContent.trim());
+                });
+                
+                document.querySelectorAll('.config-card').forEach(function(card) {
+                    card.style.border = '1px solid blue';
+                    console.log('Added debug border to config card:', card.textContent.trim());
+                });
+                
+                // Check Bootstrap collapse initialization
+                if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                    console.log('Bootstrap Collapse is available');
+                    
+                    // Try to manually initialize the collapses
+                    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(function(collapseToggle) {
+                        try {
+                            new bootstrap.Collapse(document.querySelector(collapseToggle.getAttribute('data-bs-target')), {
+                                toggle: false
+                            });
+                            console.log('Manually initialized collapse for:', collapseToggle.getAttribute('data-bs-target'));
+                        } catch (error) {
+                            console.error('Error initializing collapse:', error);
+                        }
+                    });
+                } else {
+                    console.error('Bootstrap Collapse not available, this might be the issue');
+                }
+            } else {
+                console.warn('Utilities tab not found in sidebar');
+            }
+            
+            // Check if all expected elements are in the DOM
+            setTimeout(function() {
+                console.log('Delayed DOM check - looking for utilities tab elements');
+                const configSections = document.querySelectorAll('.section-header');
+                console.log('Found', configSections.length, 'section headers');
+                
+                const subConfigs = document.querySelectorAll('.sub-config');
+                console.log('Found', subConfigs.length, 'sub-configs');
+                
+                const configCards = document.querySelectorAll('.config-card');
+                console.log('Found', configCards.length, 'config cards');
+                
+                if (configSections.length === 0 || subConfigs.length === 0 || configCards.length === 0) {
+                    console.error('DOM elements missing, possible issue with server-side rendering or model data');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
