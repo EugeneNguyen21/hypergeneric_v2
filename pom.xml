@@ -43,6 +43,16 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+        </dependency>
+        
         <!-- Database -->
         <dependency>
             <groupId>mysql</groupId>
@@ -124,4 +134,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-</project> 
+</project>

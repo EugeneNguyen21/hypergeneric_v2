@@ -18,19 +18,34 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
+    public SecurityFilterChain debugFilterChain(HttpSecurity http) throws Exception {
+        http
+            .requestMatchers()
+                .antMatchers("/debug/**")
+                .and()
+            .authorizeRequests()
+                .anyRequest().permitAll()
+            .and()
+            .csrf().disable();
+        
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     public SecurityFilterChain operatingConsoleFilterChain(HttpSecurity http) throws Exception {
         http
             .requestMatchers()
                 .antMatchers("/operatingconsole/**")
                 .and()
             .authorizeRequests()
-                .antMatchers("/operatingconsole/login").permitAll()
+                .antMatchers("/operatingconsole/login", "/operatingconsole/perform_login").permitAll()
                 .anyRequest().authenticated()
             .and()
             .formLogin()
                 .loginPage("/operatingconsole/login")
-                .loginProcessingUrl("/operatingconsole/login")
-                .defaultSuccessUrl("/operatingconsole/index.html", true)
+                .loginProcessingUrl("/operatingconsole/perform_login")
+                .defaultSuccessUrl("/operatingconsole/", true)
                 .permitAll()
             .and()
             .logout()
@@ -46,16 +61,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(2)
+    @Order(3)
     public SecurityFilterChain mainFilterChain(HttpSecurity http) throws Exception {
         http
             .requestMatchers()
-                .antMatchers("/h2-console/**", "/hypergeneric/**", "/static/**", "/favicon.ico")
+                .antMatchers("/h2-console/**", "/hypergeneric/**", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico")
                 .and()
             .authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/hypergeneric/**").permitAll()
-                .antMatchers("/static/**", "/favicon.ico").permitAll()
+                .antMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 .anyRequest().authenticated()
             .and()
             .csrf().disable()
@@ -78,4 +93,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-} 
+}

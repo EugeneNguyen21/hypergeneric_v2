@@ -1,0 +1,733 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hai Phong Port",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.7017, 20.8560]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Saigon Port",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [106.7233, 10.7672]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Da Nang Port",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [108.2149, 16.1173]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Quy Nhon Port",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [109.2285, 13.7795]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cai Mep - Thi Vai Port",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [107.0479, 10.5734]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Can Tho Port",
+        "type": "riverport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [105.7793, 10.0329]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nghi Son Port",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [105.8122, 19.3429]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vung Tau Port",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [107.0818, 10.3460]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nha Trang Port",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [109.1967, 12.2521]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Shanghai Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [121.4917, 31.2417]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Dalian Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [121.6186, 38.9678]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Qingdao Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [120.3208, 36.0662]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Shenzhen Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [113.8828, 22.5042]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Xiamen Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [118.0736, 24.4518]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Ningbo Zhoushan Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [121.8187, 29.9344]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Tianjin Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [117.7365, 39.0169]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Guangzhou Port", "country": "China", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [113.4777, 23.1102]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Yingkou Port", "country": "China", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [122.2416, 40.2669]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Wuhan Port", "country": "China", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [114.3054, 30.5928]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Lianyungang Port", "country": "China", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [119.2224, 34.7361]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Wenzhou Port", "country": "China", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [120.6982, 27.9937]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Nagoya Port", "country": "Japan", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [136.8836, 35.0800]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Yokohama Port", "country": "Japan", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [139.6380, 35.4540]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Kobe Port", "country": "Japan", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [135.1955, 34.6901]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Tokyo Port", "country": "Japan", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [139.7909, 35.6275]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Moji Port", "country": "Japan", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [130.9617, 33.9081]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Hakata Port", "country": "Japan", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [130.4017, 33.6064]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Sendai Port", "country": "Japan", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [140.9847, 38.2682]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Osaka Port", "country": "Japan", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [135.4601, 34.6500]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Manila", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [120.9667, 14.5833]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Cebu", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [123.9031, 10.3090]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Batangas Port", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [121.0437, 13.7578]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Subic", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [120.2420, 14.7956]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Cagayan de Oro", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [124.6489, 8.4822]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Davao", "country": "Philippines", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [125.6389, 7.0667]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Iloilo Domestic Port", "country": "Philippines", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [122.5667, 10.7000]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of General Santos", "country": "Philippines", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [125.1717, 6.1061]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Zamboanga", "country": "Philippines", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [122.0761, 6.9103]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Singapore", "country": "Singapore", "type": "seaport", "capacity": "very high"}
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Rotterdam",
+        "country": "Netherlands",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [4.3125, 51.9446]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Los Angeles",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.2641, 33.7405]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Jebel Ali",
+        "country": "United Arab Emirates",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [55.0273, 25.0657]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Hamburg",
+        "country": "Germany",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [9.9668, 53.5413]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Antwerp",
+        "country": "Belgium",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [4.4003, 51.2608]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Busan",
+        "country": "South Korea",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [129.0756, 35.1028]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Santos",
+        "country": "Brazil",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-46.2928, -23.9608]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Sydney",
+        "country": "Australia",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [151.2048, -33.8688]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of New York and New Jersey",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-74.0132, 40.7056]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Long Beach",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-118.2167, 33.75]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Felixstowe",
+        "country": "United Kingdom",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [1.3500, 51.9636]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Valencia",
+        "country": "Spain",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-0.3167, 39.4333]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Durban",
+        "country": "South Africa",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [31.0218, -29.8717]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Tanjung Pelepas",
+        "country": "Malaysia",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [103.5386, 1.3561]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Colombo",
+        "country": "Sri Lanka",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [79.8400, 6.9533]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Algeciras",
+        "country": "Spain",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-5.4539, 36.1267]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Manzanillo",
+        "country": "Mexico",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-104.3167, 19.0500]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Vancouver",
+        "country": "Canada",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-123.1187, 49.2827]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Oakland",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.3321, 37.7955]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Seattle",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.3372, 47.6019]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Miami",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-80.1773, 25.7781]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Charleston",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-79.9224, 32.7831]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Baltimore",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-76.5786, 39.2636]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Philadelphia",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-75.1419, 39.9181]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of Boston",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-71.0202, 42.3610]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port of San Diego",
+        "country": "United States",
+        "type": "seaport",
+        "capacity": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-117.1611, 32.7157]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of South Louisiana", "country": "United States", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [-90.5908, 30.0860]}
+    },
+    {"type": "Feature", "properties": {"name": "Port of Corpus Christi", "country": "United States", "type": "seaport", "capacity": "very high"}, "geometry": {"type": "Point", "coordinates": [-97.3957, 27.8153]}},
+    {"type": "Feature", "properties": {"name": "Port of New Orleans", "country": "United States", "type": "seaport", "capacity": "very high"}, "geometry": {"type": "Point", "coordinates": [-90.0489, 29.9547]}},
+    {"type": "Feature", "properties": {"name": "Port of Greater Baton Rouge", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-91.1871, 30.4583]}},
+    {"type": "Feature", "properties": {"name": "Port of Beaumont", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-94.0977, 30.0861]}},
+    {"type": "Feature", "properties": {"name": "Port of Hampton Roads", "country": "United States", "type": "seaport", "capacity": "very high"}, "geometry": {"type": "Point", "coordinates": [-76.3303, 36.8508]}},
+    {"type": "Feature", "properties": {"name": "Port of Mobile", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-88.0431, 30.6944]}},
+    {"type": "Feature", "properties": {"name": "Plaquemines Port", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-89.9641, 29.3691]}},
+    {"type": "Feature", "properties": {"name": "Port of Lake Charles", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-93.2174, 30.2266]}},
+    {"type": "Feature", "properties": {"name": "Port of Port Arthur", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-93.9390, 29.8849]}},
+    {"type": "Feature", "properties": {"name": "Port Freeport", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-95.3174, 28.9545]}},
+    {"type": "Feature", "properties": {"name": "Port of Texas City", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-94.9027, 29.3838]}},
+    {"type": "Feature", "properties": {"name": "Port of Tampa Bay", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-82.4497, 27.9506]}},
+    {"type": "Feature", "properties": {"name": "Port Everglades", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-80.1263, 26.0902]}},
+    {"type": "Feature", "properties": {"name": "Port of Jacksonville", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-81.6557, 30.3322]}},
+    {"type": "Feature", "properties": {"name": "Port of Galveston", "country": "United States", "type": "seaport", "capacity": "medium"}, "geometry": {"type": "Point", "coordinates": [-94.7977, 29.3013]}},
+    {"type": "Feature", "properties": {"name": "Port of Tacoma", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-122.4362, 47.2551]}},
+    {"type": "Feature", "properties": {"name": "Port of Portland", "country": "United States", "type": "seaport", "capacity": "high"}, "geometry": {"type": "Point", "coordinates": [-122.6765, 45.5231]}},
+    {"type": "Feature", "properties": {"name": "Port of Richmond", "country": "United States", "type": "seaport", "capacity": "medium"}, "geometry": {"type": "Point", "coordinates": [-122.3661, 37.9358]}},
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Novorossiysk", "country": "Russia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [37.7833, 44.7167]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Ust-Luga", "country": "Russia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [28.2986, 59.7367]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Le Havre-Rouen-Paris", "country": "France", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [0.1079, 49.4939]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Constanța", "country": "Romania", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [28.6336, 44.1167]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Gdańsk", "country": "Poland", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [18.6466, 54.4031]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Marseille", "country": "France", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [5.3378, 43.3525]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Barcelona", "country": "Spain", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [2.1769, 41.3525]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Bergen", "country": "Norway", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [5.3221, 60.3913]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Primorsk", "country": "Russia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [28.6136, 60.3667]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Amsterdam", "country": "Netherlands", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [4.8952, 52.3702]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Trieste", "country": "Italy", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [13.7701, 45.6500]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Murmansk", "country": "Russia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [33.0856, 68.9792]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of London", "country": "United Kingdom", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [0.0553, 51.5072]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Port of Saint Petersburg", "country": "Russia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [30.2642, 59.9311]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Jakarta Port (Tanjung Priok)", "country": "Indonesia", "type": "seaport", "capacity": "very high"},
+      "geometry": {"type": "Point", "coordinates": [106.8770, -6.1040]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Belawan Port", "country": "Indonesia", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [98.6932, 3.7856]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Dumai Port", "country": "Indonesia", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [101.4432, 1.6676]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Cirebon Port", "country": "Indonesia", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [108.5740, -6.7046]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Gresik Port", "country": "Indonesia", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [112.6550, -7.1517]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Jambi Port (Talag Duku)", "country": "Indonesia", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [103.6170, -1.6100]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Teluk Bayur Port", "country": "Indonesia", "type": "seaport", "capacity": "high"},
+      "geometry": {"type": "Point", "coordinates": [100.3600, -0.9833]}
+    },
+    {
+      "type": "Feature",
+      "properties": {"name": "Pontianak Port", "country": "Indonesia", "type": "seaport", "capacity": "medium"},
+      "geometry": {"type": "Point", "coordinates": [109.3333, -0.0333]}
+    }
+  ]
+}

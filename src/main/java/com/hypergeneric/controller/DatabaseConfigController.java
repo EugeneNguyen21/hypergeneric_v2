@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,39 @@ public class DatabaseConfigController {
     public String accessDatasource(@PathVariable Long id, Model model) {
         DatabaseConfig config = service.getConfigById(id);
         model.addAttribute("config", config);
-        return "datasource-login";
+        return "datasource/datasource_login";
+    }
+
+    @PostMapping("/{id}/connect")
+    public String connectToDatasource(@PathVariable Long id, 
+                                     @RequestParam String username,
+                                     @RequestParam String password,
+                                     HttpSession session,
+                                     Model model) {
+        try {
+            DatabaseConfig config = service.getConfigById(id);
+            
+            // Validate credentials against the datasource's users table
+            boolean authenticated = service.authenticateAgainstDatasource(config, username, password);
+            
+            if (authenticated) {
+                // Store connection details in session only if authentication succeeded
+                session.setAttribute("datasource_id", id);
+                session.setAttribute("datasource_name", config.getDsName());
+                session.setAttribute("datasource_username", username);
+                
+                // Redirect to the hypergeneric interface
+                return "redirect:/hypergeneric/" + config.getDsName();
+            } else {
+                model.addAttribute("error", "Invalid username or password for this datasource");
+                model.addAttribute("config", config);
+                return "datasource/datasource_login";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to connect: " + e.getMessage());
+            model.addAttribute("config", service.getConfigById(id));
+            return "datasource/datasource_login";
+        }
     }
 
     @GetMapping("/add")
@@ -104,4 +137,4 @@ public class DatabaseConfigController {
             ));
         }
     }
-} 
+}
