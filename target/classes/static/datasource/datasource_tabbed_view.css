@@ -88,14 +88,15 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
     opacity: 1;
 }
 .sidebar-icon i {
-    display: inline-block;
-    color: #222;
-    opacity: 1;
-    visibility: visible;
-    font-size: 1.4rem;
-    background: none;
-    font-family: "Font Awesome 5 Free" !important;
-    font-weight: 900 !important;
+    display: inline-block !important;
+    color: white !important; /* Change to white to be visible against dark sidebar */
+    font-size: 1.4rem !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+.sidebar-icon.active i,
+.sidebar-icon:hover i {
+    color: #222 !important; /* Dark color when active or hovered */
 }
 .sidebar-icon.active, .sidebar-icon:hover {
     background: #e9ecef;
@@ -315,4 +316,56 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
     width: 16px;
     color: #6c757d;
     margin-right: 6px;
+}
+
+/* Fix for dynamically created sidebar tab icons */
+button.sidebar-icon i,
+a.sidebar-icon i {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+button.sidebar-icon,
+a.sidebar-icon {
+  background-color: transparent;
+}
+
+/* Change icon visibility for active tabs */
+button.sidebar-icon.active i,
+a.sidebar-icon.active i {
+  color: #222 !important;
+}
+
+/* Default icon color for non-active tabs */
+.sidebar .flex-grow-1 button.sidebar-icon:not(.active) i,
+.sidebar .flex-grow-1 a.sidebar-icon:not(.active) i {
+  color: white !important;
+}
+
+.custom-sidebar-tab button.sidebar-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.custom-sidebar-tab button.sidebar-icon::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: transparent;
+  z-index: -1;
+}
+
+.custom-sidebar-tab button.sidebar-icon:hover::before {
+  opacity: 1;
+  background: #e9ecef;
+}
+
+.custom-sidebar-tab button.sidebar-icon.active::before {
+  opacity: 1;
+  background: #e9ecef;
 }

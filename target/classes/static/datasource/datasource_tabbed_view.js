@@ -177,7 +177,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'sidebar-icon nav-link mb-1 active';
-        btn.innerHTML = `<i class="${iconClass}"></i>`;
+        
+        // Create the icon with both the icon class and text content for better rendering
+        const iconElement = document.createElement('i');
+        iconElement.className = iconClass; 
+        btn.appendChild(iconElement);
+        
+        // Apply style directly to ensure visibility
         btn.style.background = 'none';
         btn.style.border = 'none';
         btn.style.padding = '0';
@@ -232,9 +238,16 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('DEBUG: Sidebar tab clicked for', label, 'at', new Date().toISOString());
             document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-            // Restore the icon in case it was lost
-            const iconClass = tabDiv.dataset.iconClass || 'fas fa-star';
-            btn.innerHTML = `<i class="${iconClass}"></i>`;
+            
+            // Re-apply icon to ensure it's visible after tab switch
+            if (iconElement && !iconElement.isConnected) {
+                // If icon was somehow removed, recreate it
+                while (btn.firstChild) btn.removeChild(btn.firstChild);
+                const newIconElement = document.createElement('i');
+                newIconElement.className = iconClass;
+                btn.appendChild(newIconElement);
+            }
+            
             showTabContent(tabId);
         });
         // Show this new tab
