@@ -1,0 +1,564 @@
+<!-- Blueprint Builder Content Only: No <html>, <head>, or <body> tags -->
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h3>Blueprint Builder <small class="text-muted">Design your data model</small></h3>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-12 blueprint-toolbar">
+            <button class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save Blueprint</button>
+            <button class="btn btn-secondary btn-sm"><i class="fas fa-undo"></i> Undo</button>
+            <button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> Redo</button>
+            <button class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Preview</button>
+            <button class="btn btn-outline-secondary btn-sm" id="clearCanvas"><i class="fas fa-trash"></i> Clear Canvas</button>
+            <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-file-export"></i> Export</button>
+            <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-file-import"></i> Import</button>
+            <div class="float-end">
+                <button class="btn btn-success btn-sm"><i class="fas fa-play"></i> Validate Blueprint</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Object Palette -->
+        <div class="col-md-3">
+            <div class="object-palette">
+                <h5>Object Library</h5>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control form-control-sm" placeholder="Search objects...">
+                    <button class="btn btn-outline-secondary btn-sm" type="button"><i class="fas fa-search"></i></button>
+                </div>
+                
+                <!-- Entity Objects -->
+                <div class="object-library-section">
+                    <h6 data-bs-toggle="collapse" data-bs-target="#entityObjects">
+                        <i class="fas fa-database"></i> Entities
+                        <i class="fas fa-chevron-down float-end"></i>
+                    </h6>
+                    <div id="entityObjects" class="collapse show content">
+                        <div class="blueprint-object palette-item" data-object-type="entity">
+                            <i class="fas fa-table"></i> Basic Entity
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="document">
+                            <i class="fas fa-file-alt"></i> Document
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="process">
+                            <i class="fas fa-cogs"></i> Process
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Field Objects -->
+                <div class="object-library-section">
+                    <h6 data-bs-toggle="collapse" data-bs-target="#fieldObjects">
+                        <i class="fas fa-list"></i> Fields
+                        <i class="fas fa-chevron-down float-end"></i>
+                    </h6>
+                    <div id="fieldObjects" class="collapse show content">
+                        <div class="blueprint-object palette-item" data-object-type="text">
+                            <i class="fas fa-font"></i> Text Field
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="number">
+                            <i class="fas fa-hashtag"></i> Number Field
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="date">
+                            <i class="fas fa-calendar-alt"></i> Date Field
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="boolean">
+                            <i class="fas fa-toggle-on"></i> Boolean Field
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="enum">
+                            <i class="fas fa-list-ol"></i> Enum Field
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Relationship Objects -->
+                <div class="object-library-section">
+                    <h6 data-bs-toggle="collapse" data-bs-target="#relationshipObjects">
+                        <i class="fas fa-project-diagram"></i> Relationships
+                        <i class="fas fa-chevron-down float-end"></i>
+                    </h6>
+                    <div id="relationshipObjects" class="collapse show content">
+                        <div class="blueprint-object palette-item" data-object-type="one-to-many">
+                            <i class="fas fa-arrow-alt-circle-right"></i> One-to-Many
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="many-to-many">
+                            <i class="fas fa-arrows-alt-h"></i> Many-to-Many
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <div class="blueprint-object palette-item" data-object-type="one-to-one">
+                            <i class="fas fa-link"></i> One-to-One
+                            <button class="plus-btn" title="Open in new tab"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Canvas -->
+        <div class="col-md-6">
+            <div class="blueprint-canvas" id="canvas">
+                <!-- Canvas objects will be placed here -->
+            </div>
+        </div>
+        
+        <!-- Properties Panel -->
+        <div class="col-md-3">
+            <div class="properties-panel">
+                <h5>Properties</h5>
+                <div id="noSelection" class="text-muted">
+                    <p>No object selected</p>
+                    <p>Click on an object in the canvas to view and edit its properties.</p>
+                </div>
+                
+                <div id="entityProperties" style="display: none;">
+                    <h6>Entity Properties</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="entityName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control form-control-sm" id="entityDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Table Name</label>
+                        <input type="text" class="form-control form-control-sm" id="entityTableName">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="entityAuditable">
+                        <label class="form-check-label" for="entityAuditable">Auditable</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="entityVersioned">
+                        <label class="form-check-label" for="entityVersioned">Versioned</label>
+                    </div>
+                </div>
+                
+                <div id="fieldProperties" style="display: none;">
+                    <h6>Field Properties</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="fieldName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control form-control-sm" id="fieldDescription" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data Type</label>
+                        <select class="form-select form-select-sm" id="fieldType">
+                            <option value="string">String</option>
+                            <option value="integer">Integer</option>
+                            <option value="decimal">Decimal</option>
+                            <option value="boolean">Boolean</option>
+                            <option value="date">Date</option>
+                            <option value="datetime">DateTime</option>
+                            <option value="blob">Blob</option>
+                            <option value="clob">Clob</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Column Name</label>
+                        <input type="text" class="form-control form-control-sm" id="fieldColumnName">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="fieldRequired">
+                        <label class="form-check-label" for="fieldRequired">Required</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="fieldUnique">
+                        <label class="form-check-label" for="fieldUnique">Unique</label>
+                    </div>
+                </div>
+                
+                <div id="relationshipProperties" style="display: none;">
+                    <h6>Relationship Properties</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control form-control-sm" id="relationshipName">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select form-select-sm" id="relationshipType">
+                            <option value="oneToMany">One-to-Many</option>
+                            <option value="manyToMany">Many-to-Many</option>
+                            <option value="oneToOne">One-to-One</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">From Entity</label>
+                        <input type="text" class="form-control form-control-sm" id="relationshipFromEntity" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">To Entity</label>
+                        <input type="text" class="form-control form-control-sm" id="relationshipToEntity" readonly>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="relationshipCascade">
+                        <label class="form-check-label" for="relationshipCascade">Cascade Delete</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.palette-item { position: relative; }
+.plus-btn {
+  display: none;
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 2;
+}
+.palette-item:hover .plus-btn { display: inline-block; }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize jsPlumb
+        const jsPlumbInstance = jsPlumb.getInstance({
+            Endpoint: ["Dot", { radius: 3 }],
+            Connector: ["Bezier", { curviness: 50 }],
+            HoverPaintStyle: { stroke: "#1e8151", strokeWidth: 2 },
+            ConnectionOverlays: [
+                ["Arrow", { location: 1, width: 10, length: 10, id: "arrow" }]
+            ],
+            Container: "canvas"
+        });
+        
+        let objectIdCounter = 0;
+        let selectedObject = null;
+        
+        // Make canvas objects draggable with jsPlumb
+        jsPlumbInstance.draggable(document.querySelectorAll(".canvas-object"), {
+            grid: [10, 10]
+        });
+        
+        // Make palette objects draggable to the canvas
+        const blueprintObjects = document.querySelectorAll('.blueprint-object');
+        
+        blueprintObjects.forEach(function(object) {
+            object.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('object-type', this.getAttribute('data-object-type'));
+            });
+            
+            object.setAttribute('draggable', 'true');
+        });
+        
+        // Allow dropping objects on the canvas
+        const canvas = document.getElementById('canvas');
+        
+        canvas.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+        
+        canvas.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const objectType = e.dataTransfer.getData('object-type');
+            
+            // Get canvas offset for positioning
+            const canvasRect = canvas.getBoundingClientRect();
+            const x = e.clientX - canvasRect.left;
+            const y = e.clientY - canvasRect.top;
+            
+            createCanvasObject(objectType, x, y);
+        });
+        
+        // Create a new object on the canvas
+        function createCanvasObject(type, x, y) {
+            objectIdCounter++;
+            const id = `object-${objectIdCounter}`;
+            
+            // Create object based on type
+            let title, color, icon;
+            
+            switch(type) {
+                case 'entity':
+                    title = 'Entity';
+                    color = '#007bff';
+                    icon = 'table';
+                    break;
+                case 'document':
+                    title = 'Document';
+                    color = '#28a745';
+                    icon = 'file-alt';
+                    break;
+                case 'process':
+                    title = 'Process';
+                    color = '#fd7e14';
+                    icon = 'cogs';
+                    break;
+                case 'text':
+                    title = 'Text Field';
+                    color = '#6c757d';
+                    icon = 'font';
+                    break;
+                case 'number':
+                    title = 'Number Field';
+                    color = '#6c757d';
+                    icon = 'hashtag';
+                    break;
+                case 'date':
+                    title = 'Date Field';
+                    color = '#6c757d';
+                    icon = 'calendar-alt';
+                    break;
+                case 'boolean':
+                    title = 'Boolean Field';
+                    color = '#6c757d';
+                    icon = 'toggle-on';
+                    break;
+                case 'enum':
+                    title = 'Enum Field';
+                    color = '#6c757d';
+                    icon = 'list-ol';
+                    break;
+                case 'one-to-many':
+                    title = 'One to Many';
+                    color = '#dc3545';
+                    icon = 'arrow-alt-circle-right';
+                    break;
+                case 'many-to-many':
+                    title = 'Many to Many';
+                    color = '#dc3545';
+                    icon = 'arrows-alt-h';
+                    break;
+                case 'one-to-one':
+                    title = 'One to One';
+                    color = '#dc3545';
+                    icon = 'link';
+                    break;
+                default:
+                    title = 'Object';
+                    color = '#6c757d';
+                    icon = 'cube';
+            }
+            
+            // Create the DOM element
+            const objectElement = document.createElement('div');
+            objectElement.id = id;
+            objectElement.className = 'canvas-object';
+            objectElement.setAttribute('data-type', type);
+            
+            objectElement.style.left = `${x}px`;
+            objectElement.style.top = `${y}px`;
+            
+            objectElement.innerHTML = `
+                <div class="title" style="background-color: ${color};">
+                    <i class="fas fa-${icon}"></i> ${title}
+                </div>
+                <div class="properties">
+                    <div class="property">Name: New${title.replace(' ', '')}</div>
+                </div>
+                <div class="connection-dot input"></div>
+                <div class="connection-dot output"></div>
+            `;
+            
+            canvas.appendChild(objectElement);
+            
+            // Make the new object draggable with jsPlumb
+            jsPlumbInstance.draggable(id, {
+                grid: [10, 10]
+            });
+            
+            // Add endpoints for connections
+            jsPlumbInstance.addEndpoint(id, {
+                anchor: "Left",
+                isSource: false,
+                isTarget: true,
+                maxConnections: -1
+            });
+            
+            jsPlumbInstance.addEndpoint(id, {
+                anchor: "Right",
+                isSource: true,
+                isTarget: false,
+                maxConnections: -1
+            });
+            
+            // Add click event to select the object
+            objectElement.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectObject(this);
+            });
+            
+            // Select the newly created object
+            selectObject(objectElement);
+        }
+        
+        // Select an object and show its properties
+        function selectObject(object) {
+            // Deselect previously selected object
+            if (selectedObject) {
+                selectedObject.classList.remove('selected');
+                selectedObject.style.border = '1px solid #999';
+            }
+            
+            // Select the new object
+            selectedObject = object;
+            selectedObject.classList.add('selected');
+            selectedObject.style.border = '2px solid #007bff';
+            
+            // Show properties panel based on object type
+            document.getElementById('noSelection').style.display = 'none';
+            
+            const type = object.getAttribute('data-type');
+            
+            if (type === 'entity' || type === 'document' || type === 'process') {
+                document.getElementById('entityProperties').style.display = 'block';
+                document.getElementById('fieldProperties').style.display = 'none';
+                document.getElementById('relationshipProperties').style.display = 'none';
+                
+                // Populate form with entity properties
+                document.getElementById('entityName').value = 'New' + type.charAt(0).toUpperCase() + type.slice(1);
+                document.getElementById('entityDescription').value = '';
+                document.getElementById('entityTableName').value = type.toUpperCase() + '_TABLE';
+                
+            } else if (type === 'text' || type === 'number' || type === 'date' || type === 'boolean' || type === 'enum') {
+                document.getElementById('entityProperties').style.display = 'none';
+                document.getElementById('fieldProperties').style.display = 'block';
+                document.getElementById('relationshipProperties').style.display = 'none';
+                
+                // Populate form with field properties
+                document.getElementById('fieldName').value = 'New' + type.charAt(0).toUpperCase() + type.slice(1);
+                document.getElementById('fieldDescription').value = '';
+                document.getElementById('fieldType').value = type === 'text' ? 'string' : 
+                                                           type === 'number' ? 'integer' : 
+                                                           type === 'date' ? 'date' : 
+                                                           type === 'boolean' ? 'boolean' : 'string';
+                document.getElementById('fieldColumnName').value = type.toUpperCase() + '_COLUMN';
+                
+            } else if (type === 'one-to-many' || type === 'many-to-many' || type === 'one-to-one') {
+                document.getElementById('entityProperties').style.display = 'none';
+                document.getElementById('fieldProperties').style.display = 'none';
+                document.getElementById('relationshipProperties').style.display = 'block';
+                
+                // Populate form with relationship properties
+                document.getElementById('relationshipName').value = 'New' + type.replace(/-/g, '');
+                document.getElementById('relationshipType').value = type === 'one-to-many' ? 'oneToMany' : 
+                                                                   type === 'many-to-many' ? 'manyToMany' : 'oneToOne';
+                document.getElementById('relationshipFromEntity').value = 'Source Entity';
+                document.getElementById('relationshipToEntity').value = 'Target Entity';
+            }
+        }
+        
+        // Deselect when clicking the canvas
+        canvas.addEventListener('click', function(e) {
+            if (e.target === canvas) {
+                if (selectedObject) {
+                    selectedObject.classList.remove('selected');
+                    selectedObject.style.border = '1px solid #999';
+                    selectedObject = null;
+                }
+                
+                document.getElementById('noSelection').style.display = 'block';
+                document.getElementById('entityProperties').style.display = 'none';
+                document.getElementById('fieldProperties').style.display = 'none';
+                document.getElementById('relationshipProperties').style.display = 'none';
+            }
+        });
+        
+        // Update object properties
+        document.getElementById('entityName').addEventListener('input', function() {
+            if (selectedObject) {
+                const properties = selectedObject.querySelector('.properties');
+                properties.innerHTML = `<div class="property">Name: ${this.value}</div>`;
+            }
+        });
+        
+        document.getElementById('fieldName').addEventListener('input', function() {
+            if (selectedObject) {
+                const properties = selectedObject.querySelector('.properties');
+                properties.innerHTML = `<div class="property">Name: ${this.value}</div>`;
+            }
+        });
+        
+        document.getElementById('relationshipName').addEventListener('input', function() {
+            if (selectedObject) {
+                const properties = selectedObject.querySelector('.properties');
+                properties.innerHTML = `<div class="property">Name: ${this.value}</div>`;
+            }
+        });
+        
+        // Clear canvas
+        document.getElementById('clearCanvas').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear the canvas? All objects will be removed.')) {
+                jsPlumbInstance.reset();
+                canvas.innerHTML = '';
+                
+                // Reset property panels
+                document.getElementById('noSelection').style.display = 'block';
+                document.getElementById('entityProperties').style.display = 'none';
+                document.getElementById('fieldProperties').style.display = 'none';
+                document.getElementById('relationshipProperties').style.display = 'none';
+                
+                selectedObject = null;
+                objectIdCounter = 0;
+            }
+        });
+
+        // Plus button logic for all palette items
+        document.querySelectorAll('.palette-item .plus-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const parent = this.closest('.palette-item');
+                const type = parent.getAttribute('data-object-type');
+                openPaletteTab(type, parent.innerText.trim());
+            });
+        });
+
+        // Tab logic: create a new tab and preserve data per tab
+        function openPaletteTab(type, label) {
+            // Find or create the tab bar
+            let tabBar = document.querySelector('.blueprint-tabs');
+            if (!tabBar) {
+                tabBar = document.createElement('div');
+                tabBar.className = 'blueprint-tabs';
+                document.querySelector('.container-fluid').insertBefore(tabBar, document.querySelector('.row.mb-3').nextSibling);
+            }
+            // Create a new tab button
+            const tabId = 'tab-' + Date.now();
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'blueprint-tab';
+            tabBtn.setAttribute('data-tab', tabId);
+            tabBtn.innerHTML = `<i class="fas fa-cube"></i> ${label}`;
+            tabBar.appendChild(tabBtn);
+            // Create a new tab content section
+            const tabSection = document.createElement('div');
+            tabSection.className = 'blueprint-section';
+            tabSection.id = tabId;
+            tabSection.innerHTML = `<div style='padding:2rem;'><b>${label}</b> tab for type <code>${type}</code>.<br>Tab data is preserved here.</div>`;
+            document.querySelector('.container-fluid').appendChild(tabSection);
+            // Tab switching logic
+            tabBtn.addEventListener('click', function() {
+                document.querySelectorAll('.blueprint-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.blueprint-section').forEach(sec => sec.style.display = 'none');
+                tabSection.style.display = 'block';
+            });
+            // Activate the new tab
+            tabBtn.click();
+        }
+    });
+</script>

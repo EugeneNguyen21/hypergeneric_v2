@@ -1,0 +1,306 @@
+/* CSS extracted from datasource_tabbed_view.html */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body, .container-fluid, .row, .col-md-11, .col-md-1 {
+    height: 100vh !important;
+    min-height: 100vh !important;
+}
+#map {
+    height: 100vh !important;
+    min-height: 100vh !important;
+    width: 100%;
+    min-width: 900px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.sidebar {
+    background: #222;
+    color: #fff;
+    height: 100vh;
+    min-width: 40px;
+    max-width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+}
+.sidebar-header {
+    width: 100%;
+    padding: 18px 0 8px 0;
+    text-align: center;
+    border-bottom: 1px solid #444;
+}
+.sidebar-header .datasource-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.sidebar-header .welcome {
+    font-size: 0.95rem;
+    color: #bbb;
+}
+.sidebar-header .logout-link {
+    font-size: 0.95rem;
+    color: #f55;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 4px;
+}
+.sidebar-header .logout-link:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.sidebar-icon {
+    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    color: #fff;
+}
+.sidebar-icon.active, .sidebar-icon:hover {
+    background: #e9ecef;
+    color: #222;
+}
+.sidebar-tooltip {
+    visibility: hidden;
+    background: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 2px 8px;
+    position: absolute;
+    z-index: 10;
+    left: 48px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+.sidebar-icon:hover .sidebar-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+.map-action-btn {
+    font-size: 1.1rem !important;
+    padding: 2px 0 !important;
+    margin-bottom: 4px !important;
+    min-width: 32px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: relative;
+}
+.map-action-btn i { margin: 0; }
+.map-action-btn .spinner-border {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 28px;
+    height: 28px;
+    border-width: 0.18em;
+    z-index: 2;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+.map-action-btn[disabled] {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* New CSS for sub-configurations */
+.config-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.config-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+.sub-config {
+    display: none;
+    background: #f8f9fa;
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 10px;
+}
+.sub-config.show {
+    display: block;
+}
+.sub-config-item {
+    padding: 8px 15px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sub-config-item:hover {
+    background: #e9ecef;
+}
+.sub-config-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: #6c757d;
+}
+
+/* Section header styles */
+.section-header {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.section-header:hover {
+    background-color: #f8f9fa;
+}
+.section-header .fa-chevron-down,
+.section-header .fa-chevron-up {
+    transition: transform 0.3s;
+}
+
+/* Add scrolling for utilities page */
+.utilities-content {
+    max-height: 100vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Reduce spacing between sections */
+.card.border-0.shadow-sm {
+    margin-bottom: 0.5rem !important;
+}
+.row.mb-4, .row.mb-3, .row.mb-2 {
+    margin-bottom: 0.25rem !important;
+}
+
+/* Further reduce section and card spacing */
+.card-header {
+    padding: 0.5rem 1rem !important;
+}
+.card-body {
+    padding: 0.75rem !important;
+}
+.config-card {
+    margin-bottom: 0.25rem !important;
+}
+.sub-config {
+    margin-top: 0.25rem !important;
+    padding: 0.5rem !important;
+}
+.sub-config-item {
+    padding: 0.4rem 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+/* Reduce spacing between collapsible sections */
+.card.border-0.shadow-sm {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Style for section headers */
+.section-header {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.section-header:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Rotate chevron when expanded */
+.section-header[aria-expanded="true"] .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Transition for smooth rotation */
+.fa-chevron-down {
+    transition: transform 0.3s;
+}
+
+/* Reduce spacing in subcategories */
+.sub-config {
+    margin-top: 0.2rem;
+    padding-left: 1rem;
+}
+
+.sub-config-item {
+    padding: 0.25rem 0.5rem;
+}
+
+/* Reduce spacing in utility content */
+.utilities-content .row.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Section box styles to make them display horizontally */
+.section-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+}
+.section-box {
+    flex: 0 0 calc(19% - 8px);
+    min-width: 180px;
+    min-height: 340px;
+    margin-bottom: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    background-color: white;
+    transition: all 0.2s ease;
+}
+.section-box:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.section-header {
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+    padding: 8px;
+}
+.section-header:hover {
+    background-color: #e9ecef;
+}
+.section-header h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+.section-header .fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+.section-header[aria-expanded="true"] .fa-chevron-down {
+    transform: rotate(180deg);
+}
+.config-items {
+    padding: 8px;
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+}
+.config-item {
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 3px;
+    font-size: 0.85rem;
+}
+.config-item:hover {
+    background-color: #f1f3f5;
+}
+.config-item i {
+    width: 16px;
+    color: #6c757d;
+    margin-right: 6px;
+}

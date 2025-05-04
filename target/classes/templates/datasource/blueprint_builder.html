@@ -1,0 +1,238 @@
+<!--
+    Redesigned Blueprint Builder for embedding in a panel/modal, inspired by the provided blueprint image.
+    - Uses a tabbed interface (General, Fields, Workflow, Methods)
+    - Responsive, clean, and suitable for embedding (no <html>, <head>, <body> tags)
+    - Minimal external dependencies (Bootstrap 5, FontAwesome)
+    - All content fits inside a single main div for easy injection
+-->
+<div class="blueprint-builder-embed bg-blueprint p-4" style="min-height:70vh;">
+    <style>
+        .bg-blueprint {
+            background: repeating-linear-gradient(0deg, #18436a, #18436a 24px, #1a4a75 24px, #1a4a75 48px),
+                        repeating-linear-gradient(90deg, #18436a, #18436a 24px, #1a4a75 24px, #1a4a75 48px);
+            color: #e6f0fa;
+            font-family: 'Consolas', 'Menlo', 'Monaco', monospace;
+        }
+        .blueprint-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .blueprint-tab {
+            background: none;
+            border: 1px solid #4e7cbf;
+            color: #e6f0fa;
+            padding: 0.5rem 2.5rem;
+            margin: 0 0.25rem;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .blueprint-tab.active, .blueprint-tab:hover {
+            background: #255a8c;
+            color: #fff;
+            border-bottom: 2px solid #fff;
+        }
+        .blueprint-section {
+            display: none;
+        }
+        .blueprint-section.active {
+            display: flex;
+        }
+        .blueprint-fields, .blueprint-config, .blueprint-methods {
+            background: rgba(24,67,106,0.85);
+            border: 1.5px solid #4e7cbf;
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            min-width: 220px;
+            margin: 0 1.5rem 0 0;
+            flex: 1 1 0;
+            max-width: 320px;
+        }
+        .blueprint-fields {
+            margin-left: 0;
+        }
+        .blueprint-workflow {
+            flex: 2 1 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 220px;
+            max-width: 400px;
+        }
+        .blueprint-workflow-step {
+            background: none;
+            border: 2px solid #4e7cbf;
+            border-radius: 8px;
+            padding: 0.7rem 2.5rem;
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+            color: #fff;
+            text-align: center;
+            min-width: 120px;
+        }
+        .blueprint-arrow {
+            color: #4e7cbf;
+            font-size: 2rem;
+            text-align: center;
+            margin: 0.2rem 0;
+        }
+        .blueprint-fields-list, .blueprint-methods-list {
+            margin-top: 1rem;
+        }
+        .blueprint-field, .blueprint-method {
+            background: rgba(30,80,130,0.7);
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.5rem;
+            color: #e6f0fa;
+            font-size: 1rem;
+        }
+        .blueprint-add-btn {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: 1.5px dashed #4e7cbf;
+            color: #e6f0fa;
+            border-radius: 6px;
+            padding: 0.4rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .blueprint-add-btn:hover {
+            background: #255a8c;
+            color: #fff;
+        }
+        .blueprint-add-btn i {
+            margin-right: 0.5rem;
+        }
+        .blueprint-label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #fff;
+        }
+        .blueprint-input, .blueprint-textarea {
+            width: 100%;
+            background: #16365c;
+            border: 1px solid #4e7cbf;
+            color: #e6f0fa;
+            border-radius: 5px;
+            padding: 0.4rem 0.7rem;
+            margin-bottom: 0.7rem;
+            font-size: 1rem;
+        }
+        .blueprint-methods-table {
+            width: 100%;
+            color: #e6f0fa;
+            font-size: 0.98rem;
+            margin-top: 0.7rem;
+        }
+        .blueprint-methods-table th, .blueprint-methods-table td {
+            border-bottom: 1px solid #4e7cbf;
+            padding: 0.3rem 0.5rem;
+            text-align: left;
+        }
+        @media (max-width: 900px) {
+            .blueprint-section.active {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .blueprint-fields, .blueprint-config, .blueprint-methods, .blueprint-workflow {
+                margin: 0 0 1.5rem 0;
+                max-width: 100%;
+            }
+        }
+    </style>
+    <h2 class="text-center mb-4" style="font-family:inherit;letter-spacing:2px;font-size:2.1rem;color:#fff;">BLUEPRINT BUILDER</h2>
+    <div class="blueprint-tabs">
+        <button class="blueprint-tab active" data-tab="general">General</button>
+        <button class="blueprint-tab" data-tab="fields">Fields</button>
+        <button class="blueprint-tab" data-tab="workflow">Workflow</button>
+        <button class="blueprint-tab" data-tab="methods">Methods</button>
+    </div>
+    <!-- General Tab -->
+    <div class="blueprint-section active" id="blueprint-tab-general">
+        <div class="blueprint-config">
+            <div class="blueprint-label">Configuration</div>
+            <label class="blueprint-label" for="bp-config-name">Name</label>
+            <input class="blueprint-input" id="bp-config-name" placeholder="Enter name...">
+            <label class="blueprint-label" for="bp-config-category">Category</label>
+            <input class="blueprint-input" id="bp-config-category" placeholder="Enter category...">
+        </div>
+    </div>
+    <!-- Fields Tab -->
+    <div class="blueprint-section" id="blueprint-tab-fields">
+        <div class="blueprint-fields">
+            <div class="blueprint-label">Fields</div>
+            <button class="blueprint-add-btn" id="bp-add-field"><i class="fas fa-plus"></i> Add Field</button>
+            <div class="blueprint-fields-list" id="bp-fields-list">
+                <!-- Example fields -->
+                <div class="blueprint-field">Name</div>
+                <div class="blueprint-field">Description</div>
+            </div>
+        </div>
+    </div>
+    <!-- Workflow Tab -->
+    <div class="blueprint-section" id="blueprint-tab-workflow">
+        <div class="blueprint-workflow">
+            <div class="blueprint-label mb-3" style="font-size:1.2rem;">WORKFLOW</div>
+            <div class="blueprint-workflow-step">Draft</div>
+            <div class="blueprint-arrow"><i class="fas fa-arrow-down"></i></div>
+            <div class="blueprint-workflow-step">In Review</div>
+            <div class="blueprint-arrow"><i class="fas fa-arrow-down"></i></div>
+            <div class="blueprint-workflow-step">Approved</div>
+        </div>
+    </div>
+    <!-- Methods Tab -->
+    <div class="blueprint-section" id="blueprint-tab-methods">
+        <div class="blueprint-methods">
+            <div class="blueprint-label">Methods</div>
+            <button class="blueprint-add-btn" id="bp-add-method"><i class="fas fa-plus"></i> Add Method</button>
+            <table class="blueprint-methods-table">
+                <thead>
+                    <tr><th>Trigger</th><th>Action</th></tr>
+                </thead>
+                <tbody id="bp-methods-list">
+                    <tr><td>On Create</td><td>Send Email</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        // Tab switching logic
+        document.querySelectorAll('.blueprint-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.blueprint-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const tabName = this.getAttribute('data-tab');
+                document.querySelectorAll('.blueprint-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById('blueprint-tab-' + tabName).classList.add('active');
+            });
+        });
+        // Add Field/Method (demo only)
+        document.getElementById('bp-add-field').onclick = function() {
+            const name = prompt('Field name?');
+            if (name) {
+                const div = document.createElement('div');
+                div.className = 'blueprint-field';
+                div.textContent = name;
+                document.getElementById('bp-fields-list').appendChild(div);
+            }
+        };
+        document.getElementById('bp-add-method').onclick = function() {
+            const trigger = prompt('Trigger?');
+            const action = prompt('Action?');
+            if (trigger && action) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${trigger}</td><td>${action}</td>`;
+                document.getElementById('bp-methods-list').appendChild(tr);
+            }
+        };
+    </script>
+</div>
