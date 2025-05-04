@@ -172,18 +172,22 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add sidebar tab
         const tabDiv = document.createElement('div');
         tabDiv.className = 'position-relative w-100 d-flex flex-column align-items-center custom-sidebar-tab';
-        const a = document.createElement('a');
-        a.className = 'sidebar-icon nav-link mb-1 active';
-        a.href = '#'+tabId;
-        a.innerHTML = `<i class="${iconClass}"></i>`;
-        // Fallback: if icon is not rendered, set a default icon after a short delay
-        setTimeout(() => {
-            const iconElem = a.querySelector('i');
-            if (iconElem && (!iconElem.offsetWidth || iconElem.offsetWidth < 5)) {
-                iconElem.className = 'fas fa-star';
-            }
-        }, 100);
-        tabDiv.appendChild(a);
+        tabDiv.dataset.iconClass = iconClass; // Store icon class for later use
+        // Use <button> instead of <a> for sidebar tab to prevent reload
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'sidebar-icon nav-link mb-1 active';
+        btn.innerHTML = `<i class="${iconClass}"></i>`;
+        btn.style.background = 'none';
+        btn.style.border = 'none';
+        btn.style.padding = '0';
+        btn.style.margin = '0';
+        btn.style.width = '40px';
+        btn.style.height = '40px';
+        btn.style.display = 'flex';
+        btn.style.alignItems = 'center';
+        btn.style.justifyContent = 'center';
+        tabDiv.appendChild(btn);
         const tooltip = document.createElement('span');
         tooltip.className = 'sidebar-tooltip';
         tooltip.innerText = label;
@@ -205,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const panel = document.getElementById(tabId);
             if(panel) panel.remove();
             // If this tab was active, show the first tab panel if any
-            if(a.classList.contains('active')) {
+            if(btn.classList.contains('active')) {
                 const firstTab = document.querySelector('.custom-sidebar-tab .sidebar-icon');
                 if(firstTab) firstTab.click();
                 else {
@@ -223,21 +227,29 @@ document.addEventListener('DOMContentLoaded', function() {
         panel.innerHTML = `<div class='tab-content'><h2>${label}</h2><div class='alert alert-info mt-4'>This is a new tab for <b>${label}</b>. Data is preserved here.</div></div>`;
         tabPanelsContainer.appendChild(panel);
         // Tab switching logic
-        a.addEventListener('click', function(e) {
+        btn.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('DEBUG: Sidebar tab clicked for', label, 'at', new Date().toISOString());
             document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
-            a.classList.add('active');
+            btn.classList.add('active');
+            // Restore the icon in case it was lost
+            const iconClass = tabDiv.dataset.iconClass || 'fas fa-star';
+            btn.innerHTML = `<i class="${iconClass}"></i>`;
             showTabContent(tabId);
         });
         // Show this new tab
         document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
-        a.classList.add('active');
+        btn.classList.add('active');
         showTabContent(tabId);
         // Track open tab
         openTabs[tabId] = true;
     }
     function showTabContent(tabId) {
+        // Hide all static tab-content elements (Dashboard, Utilities, etc.)
+        document.querySelectorAll('.tab-content').forEach(panel => {
+            panel.style.display = 'none';
+        });
+        // Show/hide dynamic tab panels
         document.querySelectorAll('.tab-content-panel').forEach(panel => {
             panel.style.display = (panel.id === tabId) ? 'block' : 'none';
         });

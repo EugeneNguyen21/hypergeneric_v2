@@ -64,11 +64,9 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
     align-items: center;
     justify-content: center;
     transition: background 0.2s;
-    color: #fff;
-}
-.sidebar-icon.active, .sidebar-icon:hover {
-    background: #e9ecef;
-    color: #222;
+    background: none;
+    opacity: 1;
+    visibility: visible;
 }
 .sidebar-tooltip {
     visibility: hidden;
@@ -88,6 +86,20 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
 .sidebar-icon:hover .sidebar-tooltip {
     visibility: visible;
     opacity: 1;
+}
+.sidebar-icon i {
+    display: inline-block;
+    color: #222;
+    opacity: 1;
+    visibility: visible;
+    font-size: 1.4rem;
+    background: none;
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900 !important;
+}
+.sidebar-icon.active, .sidebar-icon:hover {
+    background: #e9ecef;
+    /* Do not set color here, let icon color always be #222 */
 }
 .map-action-btn {
     font-size: 1.1rem !important;
