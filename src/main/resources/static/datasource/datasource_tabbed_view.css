@@ -26,6 +26,9 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
     flex-direction: column;
     align-items: center;
     padding: 0;
+    position: relative;
+    z-index: 10;
+    overflow: visible;
 }
 .sidebar-header {
     width: 100%;
@@ -302,20 +305,67 @@ body, .container-fluid, .row, .col-md-11, .col-md-1 {
     display: block !important;
 }
 .config-item {
-    padding: 5px;
+    padding: 8px 10px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
     margin-bottom: 3px;
     font-size: 0.85rem;
+    position: relative !important;
+    display: flex;
+    align-items: center;
+    min-height: 32px;
 }
 .config-item:hover {
     background-color: #f1f3f5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .config-item i {
     width: 16px;
     color: #6c757d;
-    margin-right: 6px;
+    margin-right: 8px;
+    display: inline-block;
+}
+.config-item span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.item-plus-btn,
+.blueprint-plus-btn,
+.subitem-plus-btn {
+    position: absolute !important;
+    right: 6px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    display: none !important;
+    background: none !important;
+    border: none !important;
+    color: #007bff !important;
+    font-size: 1.1rem !important;
+    cursor: pointer !important;
+    z-index: 5 !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    transition: background-color 0.2s !important;
+}
+
+.item-plus-btn:hover,
+.blueprint-plus-btn:hover,
+.subitem-plus-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+.config-item:hover .item-plus-btn,
+.config-item:hover .blueprint-plus-btn,
+.config-subitem:hover .subitem-plus-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 /* Fix for dynamically created sidebar tab icons */

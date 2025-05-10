@@ -108,154 +108,383 @@ document.addEventListener('DOMContentLoaded', function() {
     // Keep track of open tabs
     const openTabs = {};
 
-    // Sidebar tab logic: open a new client-side tab (no reload)
-    function openSidebarTab(label) {
-        // Generate a slug for the label to use as the tab name
-        const tabSlug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        const tabId = 'customtab-' + tabSlug + '-' + Date.now();
-        // Find the sidebar
-        const sidebar = document.querySelector('.sidebar .flex-grow-1');
-        // Try to get the icon class from the clicked item
-        let iconClass = 'fas fa-star'; // default
-        let found = false;
-        if (window.lastPlusBtnClicked) {
-            // Debug: log the clicked element and its HTML
-            console.log('DEBUG: lastPlusBtnClicked:', window.lastPlusBtnClicked);
-            console.log('DEBUG: lastPlusBtnClicked.outerHTML:', window.lastPlusBtnClicked.outerHTML);
-            // Try to find the first non-plus icon in the clicked element
-            let icons = window.lastPlusBtnClicked.querySelectorAll('i.fas, i.far, i.fab');
-            console.log('DEBUG: icons in clicked:', Array.from(icons).map(i => i.className));
-            for (let i = 0; i < icons.length; i++) {
-                if (!icons[i].classList.contains('fa-plus')) {
-                    iconClass = icons[i].className;
-                    found = true;
-                    console.log('DEBUG: selected icon from clicked:', iconClass);
-                    break;
-                }
-            }
-            // If not found, walk up to the closest .config-item and try again
-            if (!found) {
-                const parentItem = window.lastPlusBtnClicked.closest('.config-item');
-                if (parentItem) {
-                    let parentIcons = parentItem.querySelectorAll('i.fas, i.far, i.fab');
-                    console.log('DEBUG: parentItem.outerHTML:', parentItem.outerHTML);
-                    console.log('DEBUG: icons in parentItem:', Array.from(parentIcons).map(i => i.className));
-                    for (let i = 0; i < parentIcons.length; i++) {
-                        if (!parentIcons[i].classList.contains('fa-plus')) {
-                            iconClass = parentIcons[i].className;
-                            found = true;
-                            console.log('DEBUG: selected icon from parentItem:', iconClass);
-                            break;
-                        }
-                    }
-                }
-            }
-            // If still not found, try section header as before
-            if (!found) {
-                const sectionBox = window.lastPlusBtnClicked.closest('.section-box');
-                if (sectionBox) {
-                    const headerIcon = sectionBox.querySelector('.section-header i.fas, .section-header i.far, .section-header i.fab');
-                    console.log('DEBUG: sectionBox.outerHTML:', sectionBox.outerHTML);
-                    if (headerIcon && !headerIcon.classList.contains('fa-plus')) {
-                        iconClass = headerIcon.className;
-                        console.log('DEBUG: selected icon from section header:', iconClass);
-                    } else {
-                        console.log('DEBUG: no suitable icon found in section header');
-                    }
-                } else {
-                    console.log('DEBUG: no sectionBox found for clicked');
-                }
-            }
-        } else {
-            console.log('DEBUG: no lastPlusBtnClicked set');
+    // --- Unified Tab Content Cache ---
+    const tabContentCache = {};
+
+    function showCacheDebug(message) {
+      const debugDiv = document.getElementById('cache-debug');
+      if (debugDiv) debugDiv.textContent = message;
+    }
+
+    function logCacheState() {
+      console.log('[CACHE STATE] tabContentCache keys:', Object.keys(tabContentCache));
+    }    function loadTabContent(tabId, url, fallbackHtml) {
+      const mainContent = document.getElementById('main-content'); // Only inject into #main-content
+      if (!mainContent) {
+        console.error('Main content area (#main-content) not found!');
+        return;
+      }
+      
+      // For custom tabs, ensure we have the tab's element and it's marked as active
+      if (tabId && tabId.startsWith('customtab-')) {
+        const customTab = document.querySelector(`.sidebar-icon[data-tab="${tabId}"]`);
+        if (customTab) {
+          document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
+          customTab.classList.add('active');
         }
-        // Add sidebar tab
-        const tabDiv = document.createElement('div');
-        tabDiv.className = 'position-relative w-100 d-flex flex-column align-items-center custom-sidebar-tab';
-        tabDiv.dataset.iconClass = iconClass; // Store icon class for later use
-        // Use <button> instead of <a> for sidebar tab to prevent reload
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'sidebar-icon nav-link mb-1 active';
+      }
+      
+      if (tabContentCache[tabId]) {
+        console.log(`[CACHE HIT] Tab '${tabId}' loaded from cache.`);
+        logCacheState();
+        showCacheDebug(`[CACHE HIT] Tab '${tabId}' loaded from cache.`);
+        mainContent.innerHTML = tabContentCache[tabId];
         
-        // Create the icon with both the icon class and text content for better rendering
-        const iconElement = document.createElement('i');
-        iconElement.className = iconClass; 
-        btn.appendChild(iconElement);
+        // Initialize utilities tab buttons if this is the utilities tab
+        if (tabId === 'utilities') {
+          setTimeout(initUtilitiesTabHoverButtons, 100);
+        }
         
-        // Apply style directly to ensure visibility
-        btn.style.background = 'none';
-        btn.style.border = 'none';
-        btn.style.padding = '0';
-        btn.style.margin = '0';
-        btn.style.width = '40px';
-        btn.style.height = '40px';
-        btn.style.display = 'flex';
-        btn.style.alignItems = 'center';
-        btn.style.justifyContent = 'center';
-        tabDiv.appendChild(btn);
-        const tooltip = document.createElement('span');
-        tooltip.className = 'sidebar-tooltip';
-        tooltip.innerText = label;
-        tabDiv.appendChild(tooltip);
-        // Add close button
-        const closeBtn = document.createElement('button');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.title = 'Close tab';
-        closeBtn.className = 'tab-close-btn';
-        closeBtn.style.cssText = 'position:absolute;top:2px;right:2px;background:none;border:none;color:#888;font-size:1.1rem;z-index:3;display:none;';
-        tabDiv.appendChild(closeBtn);
-        tabDiv.addEventListener('mouseenter',()=>{closeBtn.style.display='block';});
-        tabDiv.addEventListener('mouseleave',()=>{closeBtn.style.display='none';});
-        closeBtn.addEventListener('click',function(e){
+        return;
+      }
+      if (url) {
+        console.log(`[CACHE MISS] Fetching content for tab '${tabId}' from '${url}'.`);
+        logCacheState();
+        showCacheDebug(`[CACHE MISS] Fetching content for tab '${tabId}' from '${url}'.`);
+        fetch(url)
+          .then(r => r.text())
+          .then(html => {
+            tabContentCache[tabId] = html;
+            mainContent.innerHTML = html;
+            console.log(`[CACHE STORE] Tab '${tabId}' content cached.`);
+            logCacheState();
+            showCacheDebug(`[CACHE STORE] Tab '${tabId}' content cached.`);
+            
+            // Initialize utilities tab buttons if this is the utilities tab
+            if (tabId === 'utilities') {
+              setTimeout(initUtilitiesTabHoverButtons, 100);
+            }
+          })
+          .catch(() => {
+            mainContent.innerHTML = '<div class="alert alert-danger">Failed to load content.</div>';
+            showCacheDebug(`[CACHE ERROR] Failed to load content for tab '${tabId}'.`);
+            logCacheState();
+          });
+      } else if (fallbackHtml) {
+        tabContentCache[tabId] = fallbackHtml;
+        mainContent.innerHTML = fallbackHtml;
+        console.log(`[CACHE STORE] Tab '${tabId}' fallback content cached.`);
+        logCacheState();
+        showCacheDebug(`[CACHE STORE] Tab '${tabId}' fallback content cached.`);
+      }
+    }
+
+    // --- Refactor static tab switching to use cache-aware loader ---
+    const staticTabUrls = {
+      dashboard: '/datasource/dashboard.html',
+      search: '/datasource/search.html',
+      navigator: '/datasource/navigator.html',
+      creation: '/datasource/creation.html',
+      utilities: '/datasource/utilities.html',
+      map: '/datasource/map.html',
+      profile: '/datasource/profile.html',
+    };    // Function to initialize utilities tab hover buttons 
+    function initUtilitiesTabHoverButtons() {
+      console.log('Initializing utilities tab hover buttons');
+      
+      // Remove any existing buttons to prevent duplicates
+      document.querySelectorAll('.item-plus-btn').forEach(btn => {
+        if (btn.parentNode && btn.parentNode.classList.contains('config-item')) {
+          btn.remove();
+        }
+      });
+      
+      // Initialize plus buttons for all config items
+      document.querySelectorAll('.config-item').forEach(function(item) {
+        // Skip the blueprint item which has its own special handler
+        if (item.classList.contains('blueprint-config-item')) {
+          return;
+        }
+        
+        // Make sure item has position relative
+        item.style.position = 'relative';
+        
+        // Create and add plus button if not already present
+        if (!item.querySelector('.item-plus-btn')) {
+          const btn = document.createElement('button');
+          btn.className = 'item-plus-btn';
+          btn.title = 'Open in new tab';
+          btn.innerHTML = '<i class="fas fa-plus"></i>';
+          item.appendChild(btn);
+          
+          // Add event listeners
+          item.addEventListener('mouseenter', function() {
+            btn.style.display = 'flex';
+          });
+          
+          item.addEventListener('mouseleave', function() {
+            btn.style.display = 'none';
+          });
+          
+          btn.onclick = function(e) {
             e.stopPropagation();
-            e.preventDefault();
-            // Remove tab and panel
-            tabDiv.remove();
-            const panel = document.getElementById(tabId);
-            if(panel) panel.remove();
-            // If this tab was active, show the first tab panel if any
-            if(btn.classList.contains('active')) {
-                const firstTab = document.querySelector('.custom-sidebar-tab .sidebar-icon');
-                if(firstTab) firstTab.click();
-                else {
-                    // Hide all panels
-                    document.querySelectorAll('.tab-content-panel').forEach(p=>p.style.display='none');
-                }
-            }
+            window.lastPlusBtnClicked = item;
+            const label = item.querySelector('span') ? item.querySelector('span').innerText.trim() : item.innerText.trim();
+            openSidebarTab(label);
+          };
+        }
+      });
+      
+      // Special handling for blueprint item
+      const blueprintItem = document.querySelector('.blueprint-config-item');
+      let blueprintBtn = blueprintItem ? blueprintItem.querySelector('.blueprint-plus-btn') : null;
+      
+      if (blueprintItem) {
+        // Ensure position relative
+        blueprintItem.style.position = 'relative';
+        
+        // Create button if it doesn't exist
+        if (!blueprintBtn) {
+          blueprintBtn = document.createElement('button');
+          blueprintBtn.className = 'blueprint-plus-btn';
+          blueprintBtn.title = 'Open in new tab';
+          blueprintBtn.innerHTML = '<i class="fas fa-plus"></i>';
+          blueprintItem.appendChild(blueprintBtn);
+        }
+        
+        // Add hover events
+        const mouseEnterHandler = function() {
+          if (blueprintBtn) blueprintBtn.style.display = 'flex';
+        };
+        
+        const mouseLeaveHandler = function() {
+          if (blueprintBtn) blueprintBtn.style.display = 'none';
+        };
+        
+        // Remove existing listeners to prevent duplicates
+        blueprintItem.removeEventListener('mouseenter', mouseEnterHandler);
+        blueprintItem.removeEventListener('mouseleave', mouseLeaveHandler);
+        
+        // Add new listeners
+        blueprintItem.addEventListener('mouseenter', mouseEnterHandler);
+        blueprintItem.addEventListener('mouseleave', mouseLeaveHandler);
+        
+        // Set click handler
+        blueprintBtn.onclick = function(e) {
+          e.stopPropagation();
+          window.lastPlusBtnClicked = blueprintItem;
+          const label = blueprintItem.querySelector('span') ? blueprintItem.querySelector('span').innerText.trim() : blueprintItem.innerText.trim();
+          openSidebarTab(label);
+        };
+        
+        console.log('Blueprint item initialized with hover button');
+      } else {
+        console.warn('Blueprint config item not found');
+      }
+    }    // Prevent default navigation and handle tab switching client-side
+    // This will prevent page reloads on tab click
+    function setupSidebarTabClicks() {
+      // Function to handle tab switching (can be reused for dynamic tabs)
+      function handleTabClick(e, tabLink) {
+        e.preventDefault();
+        // Get tab id from href or data attribute
+        let tabId = tabLink.getAttribute('data-tab');
+        if (!tabId) {
+          const href = tabLink.getAttribute('href');
+          if (href && href.startsWith('#tab-')) tabId = href.substring(5);
+        }
+        if (!tabId) return;
+        
+        // Remove active from all
+        document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
+        tabLink.classList.add('active');
+        
+        // Check if this is a custom tab or a static tab
+        if (tabId.startsWith('customtab-')) {
+          loadTabContent(tabId, null, tabContentCache[tabId] || '');
+        } else if (staticTabUrls[tabId]) {
+          loadTabContent(tabId, staticTabUrls[tabId]);
+        } else {
+          // For rare cases, fallback to showing/hiding panels
+          showTabContent('tab-' + tabId);
+        }
+      }
+      
+      // Set up click handlers for predefined tabs
+      document.querySelectorAll('.sidebar-icon.nav-link').forEach(function(tabLink) {
+        // First remove any existing click handlers to prevent duplicates
+        const newTabLink = tabLink.cloneNode(true);
+        if (tabLink.parentNode) {
+          tabLink.parentNode.replaceChild(newTabLink, tabLink);
+        }
+        
+        newTabLink.addEventListener('click', function(e) {
+          handleTabClick(e, newTabLink);
         });
-        sidebar.appendChild(tabDiv);
-        // Tab content panel
-        const panel = document.createElement('div');
-        panel.className = 'tab-content-panel';
-        panel.id = tabId;
-        panel.style.display = 'none';
-        panel.innerHTML = `<div class='tab-content'><h2>${label}</h2><div class='alert alert-info mt-4'>This is a new tab for <b>${label}</b>. Data is preserved here.</div></div>`;
-        tabPanelsContainer.appendChild(panel);
-        // Tab switching logic
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('DEBUG: Sidebar tab clicked for', label, 'at', new Date().toISOString());
-            document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
-            btn.classList.add('active');
-            
-            // Re-apply icon to ensure it's visible after tab switch
-            if (iconElement && !iconElement.isConnected) {
-                // If icon was somehow removed, recreate it
-                while (btn.firstChild) btn.removeChild(btn.firstChild);
-                const newIconElement = document.createElement('i');
-                newIconElement.className = iconClass;
-                btn.appendChild(newIconElement);
-            }
-            
-            showTabContent(tabId);
+        
+        // Remove href to prevent browser navigation
+        newTabLink.removeAttribute('href');
+      });
+      
+      // Also check for any dynamically added tabs that might not have handlers yet
+      document.querySelectorAll('.custom-sidebar-tab .sidebar-icon').forEach(function(tabLink) {
+        if (!tabLink._clickHandlerAttached) {
+          tabLink.addEventListener('click', function(e) {
+            handleTabClick(e, tabLink);
+          });
+          tabLink._clickHandlerAttached = true;
+        }
+      });
+    }
+
+    // Call setupSidebarTabClicks after DOM is ready
+    setupSidebarTabClicks();// Load default tab content on page load (dashboard)
+    window.addEventListener('DOMContentLoaded', function() {
+      // Load dashboard as default
+      const dashboardTab = document.querySelector('.sidebar-icon[data-tab="dashboard"]');
+      if (dashboardTab) {
+        dashboardTab.classList.add('active');
+      }
+      loadTabContent('dashboard', staticTabUrls['dashboard']);
+      
+      // Setup for utilities tab initialization
+      const utilitiesTab = document.querySelector('.sidebar-icon[data-tab="utilities"]');
+      if (utilitiesTab) {
+        utilitiesTab.addEventListener('click', function() {
+          // Add a small delay to ensure DOM is updated
+          setTimeout(initUtilitiesTabHoverButtons, 200);
         });
-        // Show this new tab
+      }
+    });
+
+    // --- Refactor dynamic tab creation to use cache-aware loader ---
+    function openSidebarTab(label) {
+      const tabSlug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const tabId = 'customtab-' + tabSlug + '-' + Date.now();
+      const sidebar = document.querySelector('.sidebar .flex-grow-1');
+      let iconClass = 'fas fa-star';
+      // Try to get the icon class from the clicked item
+      let found = false;
+      if (window.lastPlusBtnClicked) {
+          // Debug: log the clicked element and its HTML
+          console.log('DEBUG: lastPlusBtnClicked:', window.lastPlusBtnClicked);
+          console.log('DEBUG: lastPlusBtnClicked.outerHTML:', window.lastPlusBtnClicked.outerHTML);
+          // Try to find the first non-plus icon in the clicked element
+          let icons = window.lastPlusBtnClicked.querySelectorAll('i.fas, i.far, i.fab');
+          console.log('DEBUG: icons in clicked:', Array.from(icons).map(i => i.className));
+          for (let i = 0; i < icons.length; i++) {
+              if (!icons[i].classList.contains('fa-plus')) {
+                  iconClass = icons[i].className;
+                  found = true;
+                  console.log('DEBUG: selected icon from clicked:', iconClass);
+                  break;
+              }
+          }
+          // If not found, walk up to the closest .config-item and try again
+          if (!found) {
+              const parentItem = window.lastPlusBtnClicked.closest('.config-item');
+              if (parentItem) {
+                  let parentIcons = parentItem.querySelectorAll('i.fas, i.far, i.fab');
+                  console.log('DEBUG: parentItem.outerHTML:', parentItem.outerHTML);
+                  console.log('DEBUG: icons in parentItem:', Array.from(parentIcons).map(i => i.className));
+                  for (let i = 0; i < parentIcons.length; i++) {
+                      if (!parentIcons[i].classList.contains('fa-plus')) {
+                          iconClass = parentIcons[i].className;
+                          found = true;
+                          console.log('DEBUG: selected icon from parentItem:', iconClass);
+                          break;
+                      }
+                  }
+              }
+          }
+          // If still not found, try section header as before
+          if (!found) {
+              const sectionBox = window.lastPlusBtnClicked.closest('.section-box');
+              if (sectionBox) {
+                  const headerIcon = sectionBox.querySelector('.section-header i.fas, .section-header i.far, .section-header i.fab');
+                  console.log('DEBUG: sectionBox.outerHTML:', sectionBox.outerHTML);
+                  if (headerIcon && !headerIcon.classList.contains('fa-plus')) {
+                      iconClass = headerIcon.className;
+                      console.log('DEBUG: selected icon from section header:', iconClass);
+                  } else {
+                      console.log('DEBUG: no suitable icon found in section header');
+                  }
+              } else {
+                  console.log('DEBUG: no sectionBox found for clicked');
+              }
+          }
+      } else {
+          console.log('DEBUG: no lastPlusBtnClicked set');
+      }      // Add sidebar tab
+      const tabDiv = document.createElement('div');
+      tabDiv.className = 'position-relative w-100 d-flex flex-column align-items-center custom-sidebar-tab';
+      tabDiv.dataset.iconClass = iconClass; // Store icon class for later use
+      // Use <button> instead of <a> for sidebar tab to prevent reload
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sidebar-icon nav-link mb-1 active'; // Add nav-link class to ensure it gets picked up by setupSidebarTabClicks
+      btn.setAttribute('data-tab', tabId); // Store tabId in data-tab attribute
+      
+      // Create the icon with both the icon class and text content for better rendering
+      const iconElement = document.createElement('i');
+      iconElement.className = iconClass; 
+      btn.appendChild(iconElement);
+      
+      // Apply style directly to ensure visibility
+      btn.style.background = 'none';
+      btn.style.border = 'none';
+      btn.style.padding = '0';
+      btn.style.margin = '0';
+      btn.style.width = '40px';
+      btn.style.height = '40px';
+      btn.style.display = 'flex';
+      btn.style.alignItems = 'center';
+      btn.style.justifyContent = 'center';
+      tabDiv.appendChild(btn);
+      const tooltip = document.createElement('span');
+      tooltip.className = 'sidebar-tooltip';
+      tooltip.innerText = label;
+      tabDiv.appendChild(tooltip);
+      // Add close button
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '&times;';
+      closeBtn.title = 'Close tab';
+      closeBtn.className = 'tab-close-btn';
+      closeBtn.style.cssText = 'position:absolute;top:2px;right:2px;background:none;border:none;color:#888;font-size:1.1rem;z-index:3;display:none;';
+      tabDiv.appendChild(closeBtn);
+      tabDiv.addEventListener('mouseenter',()=>{closeBtn.style.display='block';});
+      tabDiv.addEventListener('mouseleave',()=>{closeBtn.style.display='none';});
+      closeBtn.addEventListener('click',function(e){
+          e.stopPropagation();
+          e.preventDefault();
+          // Remove tab and panel
+          tabDiv.remove();
+          const panel = document.getElementById(tabId);
+          if(panel) panel.remove();
+          // If this tab was active, show the first tab panel if any
+          if(btn.classList.contains('active')) {
+              const firstTab = document.querySelector('.custom-sidebar-tab .sidebar-icon');
+              if(firstTab) firstTab.click();
+              else {
+                  // Hide all panels
+                  document.querySelectorAll('.tab-content-panel').forEach(p=>p.style.display='none');
+              }
+          }
+      });      sidebar.appendChild(tabDiv);
+      
+      // Add direct click handler to the tab button (don't rely on setupSidebarTabClicks for dynamic tabs)
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        // Remove active from all
         document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
         btn.classList.add('active');
-        showTabContent(tabId);
-        // Track open tab
-        openTabs[tabId] = true;
+        loadTabContent(tabId, null, tabContentCache[tabId] || `<div class='tab-content'><h2>${label}</h2><div class='alert alert-info mt-4'>This is a new tab for <b>${label}</b>. Data is preserved here.</div></div>`);
+      });
+      
+      // Show and cache content immediately
+      document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
+      btn.classList.add('active');
+      loadTabContent(tabId, null, `<div class='tab-content'><h2>${label}</h2><div class='alert alert-info mt-4'>This is a new tab for <b>${label}</b>. Data is preserved here.</div></div>`);
     }
     function showTabContent(tabId) {
         // Hide all static tab-content elements (Dashboard, Utilities, etc.)
@@ -306,10 +535,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Plus button logic for all config-item elements that do NOT have .config-subitems, except Blueprint
     document.querySelectorAll('.config-item').forEach(function(item, idx) {
+        // Don't process items that already have plus buttons or are the blueprint special case
         if (
-            !item.querySelector('.config-subitems') &&
             !item.querySelector('.item-plus-btn') &&
-            !item.classList.contains('blueprint-config-item') // skip Blueprint
+            !item.classList.contains('blueprint-config-item') // skip Blueprint special case
         ) {
             const btn = document.createElement('button');
             btn.className = 'item-plus-btn';
@@ -326,17 +555,25 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.style.cursor = 'pointer';
             btn.style.zIndex = '2';
             btn.innerHTML = '<i class="fas fa-plus"></i>';
-            item.classList.add('position-relative');
+            // Make sure item has position relative for absolute positioning of plus button
+            item.style.position = 'relative';
             item.appendChild(btn);
+            
+            // Add hover effects
             item.addEventListener('mouseenter', function() {
-                btn.style.display = 'inline-block';
+                const plusBtn = this.querySelector('.item-plus-btn');
+                if (plusBtn) plusBtn.style.display = 'inline-block';
             });
+            
             item.addEventListener('mouseleave', function() {
-                btn.style.display = 'none';
+                const plusBtn = this.querySelector('.item-plus-btn');
+                if (plusBtn) plusBtn.style.display = 'none';
             });
+            
             btn.onclick = function(e) {
                 e.stopPropagation();
-                const label = item.innerText.trim();
+                window.lastPlusBtnClicked = item; // Set reference to this item
+                const label = item.querySelector('span') ? item.querySelector('span').innerText.trim() : item.innerText.trim();
                 openSidebarTab(label);
             };
         }
@@ -346,25 +583,233 @@ document.addEventListener('DOMContentLoaded', function() {
     const blueprintItem = document.querySelector('.blueprint-config-item');
     const plusBtn = blueprintItem ? blueprintItem.querySelector('.blueprint-plus-btn') : null;
     if (blueprintItem && plusBtn) {
-        blueprintItem.addEventListener('mouseenter', () => { plusBtn.style.display = 'inline-block'; });
-        blueprintItem.addEventListener('mouseleave', () => { plusBtn.style.display = 'none'; });
+        // Make sure blueprint item has position relative
+        blueprintItem.style.position = 'relative';
+        
+        // Add hover events for blueprint
+        blueprintItem.addEventListener('mouseenter', function() {
+            if (plusBtn) plusBtn.style.display = 'inline-block';
+        });
+        
+        blueprintItem.addEventListener('mouseleave', function() {
+            if (plusBtn) plusBtn.style.display = 'none';
+        });
+        
+        // Update click handler
         plusBtn.onclick = function(e) {
             e.stopPropagation();
-            const label = blueprintItem.innerText.trim();
+            window.lastPlusBtnClicked = blueprintItem; // Set reference to blueprint item
+            const label = blueprintItem.querySelector('span') ? blueprintItem.querySelector('span').innerText.trim() : blueprintItem.innerText.trim();
             openSidebarTab(label);
         };
+    } else {
+        console.warn('Blueprint config item or plus button not found');
     }
 
     // Patch all plus button click handlers to set window.lastPlusBtnClicked (the clicked subitem or item)
     document.querySelectorAll('.subitem-plus-btn, .item-plus-btn, .blueprint-plus-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
+        const originalClick = btn.onclick;
+        btn.onclick = function(e) {
             // Set the clicked element itself (subitem or item)
-            window.lastPlusBtnClicked = btn.closest('.config-subitem') || btn.closest('.config-item');
-        }, true);
+            window.lastPlusBtnClicked = btn.closest('.config-subitem') || btn.closest('.config-item') || btn;
+            // Call the original click handler if it exists
+            if (typeof originalClick === 'function') {
+                originalClick.call(this, e);
+            }
+        };
     });
 
     // Debug: Log how many config-subitem elements are found
     const subitems = document.querySelectorAll('.config-subitem');
     console.log('Found', subitems.length, '.config-subitem elements');
 
-});
+    // Monitor for changes in the main content area and re-initialize utilities tab buttons
+    function setupUtilitiesTabObserver() {
+      // Create a MutationObserver to watch for DOM changes
+      const observer = new MutationObserver(function(mutations) {
+        // Check if we're on the utilities tab
+        const activeTab = document.querySelector('.sidebar-icon.active');
+        if (activeTab && activeTab.getAttribute('data-tab') === 'utilities') {
+          console.log('DOM changes detected in utilities tab, re-initializing buttons');
+          initUtilitiesTabHoverButtons();
+        }
+      });
+      
+      // Start observing the main content area
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        observer.observe(mainContent, { 
+          childList: true,
+          subtree: true,
+          attributes: false,
+          characterData: false
+        });
+        console.log('Utilities tab observer set up');
+      }
+    }
+
+    // Call this on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      setupUtilitiesTabObserver();
+    });
+
+    // Always try to initialize the map after DOMContentLoaded and after any tab change
+    function tryMapInitOnTabChange() {
+        initializeMap();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeMap();
+        // If you use tab navigation via links, also listen for clicks
+        document.querySelectorAll('.sidebar-icon').forEach(function(tabLink) {
+            tabLink.addEventListener('click', function() {
+                setTimeout(tryMapInitOnTabChange, 300); // Wait for tab to show
+            });
+        });
+    });
+
+    // Debug function to check hover button state
+    function debugHoverButtons() {
+      console.log('=== HOVER BUTTONS DEBUG ===');
+      
+      // Check config items
+      const configItems = document.querySelectorAll('.config-item');
+      console.log(`Found ${configItems.length} config items`);
+      
+      // Check plus buttons
+      const plusButtons = document.querySelectorAll('.item-plus-btn, .blueprint-plus-btn');
+      console.log(`Found ${plusButtons.length} plus buttons`);
+      
+      // Check blueprint item specifically
+      const blueprintItem = document.querySelector('.blueprint-config-item');
+      const blueprintBtn = blueprintItem ? blueprintItem.querySelector('.blueprint-plus-btn') : null;
+      console.log('Blueprint item:', blueprintItem ? 'Found' : 'Not found');
+      console.log('Blueprint button:', blueprintBtn ? 'Found' : 'Not found');
+      
+      // Check styles on config items
+      configItems.forEach((item, index) => {
+        if (index < 3) { // Just check first 3 for brevity
+          console.log(`Item ${index} position:`, window.getComputedStyle(item).position);
+          const btn = item.querySelector('.item-plus-btn') || item.querySelector('.blueprint-plus-btn');
+          if (btn) {
+            console.log(`Button ${index} display:`, window.getComputedStyle(btn).display);
+            console.log(`Button ${index} z-index:`, window.getComputedStyle(btn).zIndex);
+          }
+        }
+      });
+      
+      console.log('========================');
+    }
+    
+    // Call debug function when utilities tab is clicked
+    document.querySelector('.sidebar-icon[data-tab="utilities"]')?.addEventListener('click', function() {
+      setTimeout(debugHoverButtons, 500);
+    });
+
+    // Debug function to check tab state
+    function debugTabs() {
+      console.log('=== TABS DEBUG ===');
+      
+      // Check all sidebar-icon elements
+      const allTabs = document.querySelectorAll('.sidebar-icon');
+      console.log(`Found ${allTabs.length} total tab elements`);
+      
+      // Check custom tabs
+      const customTabs = document.querySelectorAll('.custom-sidebar-tab .sidebar-icon');
+      console.log(`Found ${customTabs.length} custom tab elements`);
+      
+      // Check which tab is active
+      const activeTabs = document.querySelectorAll('.sidebar-icon.active');
+      console.log(`Found ${activeTabs.length} active tabs`);
+      activeTabs.forEach(tab => {
+        console.log('Active tab data-tab:', tab.getAttribute('data-tab'));
+      });
+      
+      // Check tab content cache
+      console.log('Tab content cache keys:', Object.keys(tabContentCache));
+      
+      // Log custom tab details
+      customTabs.forEach((tab, idx) => {
+        const tabId = tab.getAttribute('data-tab');
+        console.log(`Custom tab ${idx} - data-tab:`, tabId);
+        console.log(`Custom tab ${idx} - has cached content:`, tabContentCache[tabId] ? 'Yes' : 'No');
+        console.log(`Custom tab ${idx} - has click handler:`, tab._clickHandlerAttached ? 'Yes' : 'No');
+      });
+      
+      console.log('========================');
+    }
+    
+    // Call debug function on clicking any tab
+    document.querySelectorAll('.sidebar-icon').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        setTimeout(debugTabs, 500);
+      });
+    });
+    
+    // --- Refactor dynamic tab creation to use cache-aware loader ---
+    // Function to re-initialize tab click handlers
+    function refreshTabClickHandlers() {
+      console.log('Refreshing tab click handlers');
+      setupSidebarTabClicks();
+      
+      // Specifically check for any dynamic tabs without handlers
+      document.querySelectorAll('.custom-sidebar-tab .sidebar-icon').forEach(function(btn) {
+        const tabId = btn.getAttribute('data-tab');
+        if (tabId && !btn._clickHandlerAttached) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Remove active from all
+            document.querySelectorAll('.sidebar-icon').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Load the cached content if available
+            if (tabContentCache[tabId]) {
+              loadTabContent(tabId, null, tabContentCache[tabId]);
+            }
+          });
+          btn._clickHandlerAttached = true;
+          console.log('Added click handler to dynamic tab:', tabId);
+        }
+      });
+    }
+    
+    // Monitor sidebar for any new tabs added
+    function setupSidebarObserver() {
+      const observer = new MutationObserver(function(mutations) {
+        // Check for added nodes that might be tabs
+        let tabsAdded = false;
+        mutations.forEach(function(mutation) {
+          if (mutation.addedNodes.length) {
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+              const node = mutation.addedNodes[i];
+              if (node.nodeType === 1 && node.classList && node.classList.contains('custom-sidebar-tab')) {
+                tabsAdded = true;
+                break;
+              }
+            }
+          }
+        });
+        
+        if (tabsAdded) {
+          console.log('New tabs detected in sidebar, refreshing click handlers');
+          setTimeout(refreshTabClickHandlers, 100);
+        }
+      });
+      
+      const sidebar = document.querySelector('.sidebar .flex-grow-1');
+      if (sidebar) {
+        observer.observe(sidebar, { 
+          childList: true,
+          subtree: false
+        });
+        console.log('Sidebar observer set up');
+      }
+    }
+
+    // Call this on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      setupSidebarObserver();
+      // Initial call to refresh handlers
+      setTimeout(refreshTabClickHandlers, 500);
+    });
+  });
