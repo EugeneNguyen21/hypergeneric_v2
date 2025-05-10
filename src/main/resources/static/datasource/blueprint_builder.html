@@ -526,9 +526,7 @@
                 const type = parent.getAttribute('data-object-type');
                 openPaletteTab(type, parent.innerText.trim());
             });
-        });
-
-        // Tab logic: create a new tab and preserve data per tab
+        });        // Tab logic: create a new tab and preserve data per tab
         function openPaletteTab(type, label) {
             // Find or create the tab bar
             let tabBar = document.querySelector('.blueprint-tabs');

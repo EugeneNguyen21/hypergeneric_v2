@@ -1,8 +1,6 @@
 // JavaScript extracted from datasource_tabbed_view.html
 // Place all custom JS logic here, including blueprint builder, map, and tab logic
 
-console.log('DEBUG: JS loaded/reloaded at', new Date().toISOString());
-
 // Use Thymeleaf's inline processing to get the correct URLs
 const vietnamPortsUrl = '/vietnam_ports.geojson';
 const shippingRoutesUrl = '/global_shipping_routes.geojson';
@@ -106,19 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Keep track of open tabs
-    const openTabs = {};
-
-    // --- Unified Tab Content Cache ---
-    const tabContentCache = {};
-
-    function showCacheDebug(message) {
-      const debugDiv = document.getElementById('cache-debug');
-      if (debugDiv) debugDiv.textContent = message;
-    }
-
-    function logCacheState() {
-      console.log('[CACHE STATE] tabContentCache keys:', Object.keys(tabContentCache));
-    }    function loadTabContent(tabId, url, fallbackHtml) {
+    const openTabs = {};    // --- Unified Tab Content Cache ---
+    const tabContentCache = {};    function loadTabContent(tabId, url, fallbackHtml) {
       const mainContent = document.getElementById('main-content'); // Only inject into #main-content
       if (!mainContent) {
         console.error('Main content area (#main-content) not found!');
@@ -135,9 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       if (tabContentCache[tabId]) {
-        console.log(`[CACHE HIT] Tab '${tabId}' loaded from cache.`);
-        logCacheState();
-        showCacheDebug(`[CACHE HIT] Tab '${tabId}' loaded from cache.`);
         mainContent.innerHTML = tabContentCache[tabId];
         
         // Initialize utilities tab buttons if this is the utilities tab
@@ -148,17 +132,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       if (url) {
-        console.log(`[CACHE MISS] Fetching content for tab '${tabId}' from '${url}'.`);
-        logCacheState();
-        showCacheDebug(`[CACHE MISS] Fetching content for tab '${tabId}' from '${url}'.`);
         fetch(url)
           .then(r => r.text())
           .then(html => {
             tabContentCache[tabId] = html;
             mainContent.innerHTML = html;
-            console.log(`[CACHE STORE] Tab '${tabId}' content cached.`);
-            logCacheState();
-            showCacheDebug(`[CACHE STORE] Tab '${tabId}' content cached.`);
             
             // Initialize utilities tab buttons if this is the utilities tab
             if (tabId === 'utilities') {
@@ -167,15 +145,10 @@ document.addEventListener('DOMContentLoaded', function() {
           })
           .catch(() => {
             mainContent.innerHTML = '<div class="alert alert-danger">Failed to load content.</div>';
-            showCacheDebug(`[CACHE ERROR] Failed to load content for tab '${tabId}'.`);
-            logCacheState();
           });
       } else if (fallbackHtml) {
         tabContentCache[tabId] = fallbackHtml;
         mainContent.innerHTML = fallbackHtml;
-        console.log(`[CACHE STORE] Tab '${tabId}' fallback content cached.`);
-        logCacheState();
-        showCacheDebug(`[CACHE STORE] Tab '${tabId}' fallback content cached.`);
       }
     }
 
@@ -190,8 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
       profile: '/datasource/profile.html',
     };    // Function to initialize utilities tab hover buttons 
     function initUtilitiesTabHoverButtons() {
-      console.log('Initializing utilities tab hover buttons');
-      
       // Remove any existing buttons to prevent duplicates
       document.querySelectorAll('.item-plus-btn').forEach(btn => {
         if (btn.parentNode && btn.parentNode.classList.contains('config-item')) {
@@ -276,12 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
           const label = blueprintItem.querySelector('span') ? blueprintItem.querySelector('span').innerText.trim() : blueprintItem.innerText.trim();
           openSidebarTab(label);
         };
-        
-        console.log('Blueprint item initialized with hover button');
-      } else {
-        console.warn('Blueprint config item not found');
       }
-    }    // Prevent default navigation and handle tab switching client-side
+    }// Prevent default navigation and handle tab switching client-side
     // This will prevent page reloads on tab click
     function setupSidebarTabClicks() {
       // Function to handle tab switching (can be reused for dynamic tabs)
@@ -355,28 +322,22 @@ document.addEventListener('DOMContentLoaded', function() {
           setTimeout(initUtilitiesTabHoverButtons, 200);
         });
       }
-    });
-
-    // --- Refactor dynamic tab creation to use cache-aware loader ---
+    });    // --- Refactor dynamic tab creation to use cache-aware loader ---
     function openSidebarTab(label) {
       const tabSlug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const tabId = 'customtab-' + tabSlug + '-' + Date.now();
       const sidebar = document.querySelector('.sidebar .flex-grow-1');
       let iconClass = 'fas fa-star';
+      
       // Try to get the icon class from the clicked item
       let found = false;
       if (window.lastPlusBtnClicked) {
-          // Debug: log the clicked element and its HTML
-          console.log('DEBUG: lastPlusBtnClicked:', window.lastPlusBtnClicked);
-          console.log('DEBUG: lastPlusBtnClicked.outerHTML:', window.lastPlusBtnClicked.outerHTML);
           // Try to find the first non-plus icon in the clicked element
           let icons = window.lastPlusBtnClicked.querySelectorAll('i.fas, i.far, i.fab');
-          console.log('DEBUG: icons in clicked:', Array.from(icons).map(i => i.className));
           for (let i = 0; i < icons.length; i++) {
               if (!icons[i].classList.contains('fa-plus')) {
                   iconClass = icons[i].className;
                   found = true;
-                  console.log('DEBUG: selected icon from clicked:', iconClass);
                   break;
               }
           }
@@ -385,13 +346,10 @@ document.addEventListener('DOMContentLoaded', function() {
               const parentItem = window.lastPlusBtnClicked.closest('.config-item');
               if (parentItem) {
                   let parentIcons = parentItem.querySelectorAll('i.fas, i.far, i.fab');
-                  console.log('DEBUG: parentItem.outerHTML:', parentItem.outerHTML);
-                  console.log('DEBUG: icons in parentItem:', Array.from(parentIcons).map(i => i.className));
                   for (let i = 0; i < parentIcons.length; i++) {
                       if (!parentIcons[i].classList.contains('fa-plus')) {
                           iconClass = parentIcons[i].className;
                           found = true;
-                          console.log('DEBUG: selected icon from parentItem:', iconClass);
                           break;
                       }
                   }
@@ -402,20 +360,12 @@ document.addEventListener('DOMContentLoaded', function() {
               const sectionBox = window.lastPlusBtnClicked.closest('.section-box');
               if (sectionBox) {
                   const headerIcon = sectionBox.querySelector('.section-header i.fas, .section-header i.far, .section-header i.fab');
-                  console.log('DEBUG: sectionBox.outerHTML:', sectionBox.outerHTML);
                   if (headerIcon && !headerIcon.classList.contains('fa-plus')) {
                       iconClass = headerIcon.className;
-                      console.log('DEBUG: selected icon from section header:', iconClass);
-                  } else {
-                      console.log('DEBUG: no suitable icon found in section header');
                   }
-              } else {
-                  console.log('DEBUG: no sectionBox found for clicked');
               }
           }
-      } else {
-          console.log('DEBUG: no lastPlusBtnClicked set');
-      }      // Add sidebar tab
+      }// Add sidebar tab
       const tabDiv = document.createElement('div');
       tabDiv.className = 'position-relative w-100 d-flex flex-column align-items-center custom-sidebar-tab';
       tabDiv.dataset.iconClass = iconClass; // Store icon class for later use
@@ -577,9 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 openSidebarTab(label);
             };
         }
-    });
-
-    // Blueprint plus button hover logic (open a new sidebar tab, not modal)
+    });    // Blueprint plus button hover logic (open a new sidebar tab, not modal)
     const blueprintItem = document.querySelector('.blueprint-config-item');
     const plusBtn = blueprintItem ? blueprintItem.querySelector('.blueprint-plus-btn') : null;
     if (blueprintItem && plusBtn) {
@@ -602,8 +550,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const label = blueprintItem.querySelector('span') ? blueprintItem.querySelector('span').innerText.trim() : blueprintItem.innerText.trim();
             openSidebarTab(label);
         };
-    } else {
-        console.warn('Blueprint config item or plus button not found');
     }
 
     // Patch all plus button click handlers to set window.lastPlusBtnClicked (the clicked subitem or item)
@@ -617,20 +563,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 originalClick.call(this, e);
             }
         };
-    });
-
-    // Debug: Log how many config-subitem elements are found
-    const subitems = document.querySelectorAll('.config-subitem');
-    console.log('Found', subitems.length, '.config-subitem elements');
-
-    // Monitor for changes in the main content area and re-initialize utilities tab buttons
+    });    // Debug: Log how many config-subitem elements are found
+    const subitems = document.querySelectorAll('.config-subitem');    // Monitor for changes in the main content area and re-initialize utilities tab buttons
     function setupUtilitiesTabObserver() {
       // Create a MutationObserver to watch for DOM changes
       const observer = new MutationObserver(function(mutations) {
         // Check if we're on the utilities tab
         const activeTab = document.querySelector('.sidebar-icon.active');
         if (activeTab && activeTab.getAttribute('data-tab') === 'utilities') {
-          console.log('DOM changes detected in utilities tab, re-initializing buttons');
           initUtilitiesTabHoverButtons();
         }
       });
@@ -644,7 +584,6 @@ document.addEventListener('DOMContentLoaded', function() {
           attributes: false,
           characterData: false
         });
-        console.log('Utilities tab observer set up');
       }
     }
 
@@ -667,92 +606,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-
-    // Debug function to check hover button state
-    function debugHoverButtons() {
-      console.log('=== HOVER BUTTONS DEBUG ===');
-      
-      // Check config items
-      const configItems = document.querySelectorAll('.config-item');
-      console.log(`Found ${configItems.length} config items`);
-      
-      // Check plus buttons
-      const plusButtons = document.querySelectorAll('.item-plus-btn, .blueprint-plus-btn');
-      console.log(`Found ${plusButtons.length} plus buttons`);
-      
-      // Check blueprint item specifically
-      const blueprintItem = document.querySelector('.blueprint-config-item');
-      const blueprintBtn = blueprintItem ? blueprintItem.querySelector('.blueprint-plus-btn') : null;
-      console.log('Blueprint item:', blueprintItem ? 'Found' : 'Not found');
-      console.log('Blueprint button:', blueprintBtn ? 'Found' : 'Not found');
-      
-      // Check styles on config items
-      configItems.forEach((item, index) => {
-        if (index < 3) { // Just check first 3 for brevity
-          console.log(`Item ${index} position:`, window.getComputedStyle(item).position);
-          const btn = item.querySelector('.item-plus-btn') || item.querySelector('.blueprint-plus-btn');
-          if (btn) {
-            console.log(`Button ${index} display:`, window.getComputedStyle(btn).display);
-            console.log(`Button ${index} z-index:`, window.getComputedStyle(btn).zIndex);
-          }
-        }
-      });
-      
-      console.log('========================');
-    }
-    
-    // Call debug function when utilities tab is clicked
-    document.querySelector('.sidebar-icon[data-tab="utilities"]')?.addEventListener('click', function() {
-      setTimeout(debugHoverButtons, 500);
-    });
-
-    // Debug function to check tab state
-    function debugTabs() {
-      console.log('=== TABS DEBUG ===');
-      
-      // Check all sidebar-icon elements
-      const allTabs = document.querySelectorAll('.sidebar-icon');
-      console.log(`Found ${allTabs.length} total tab elements`);
-      
-      // Check custom tabs
-      const customTabs = document.querySelectorAll('.custom-sidebar-tab .sidebar-icon');
-      console.log(`Found ${customTabs.length} custom tab elements`);
-      
-      // Check which tab is active
-      const activeTabs = document.querySelectorAll('.sidebar-icon.active');
-      console.log(`Found ${activeTabs.length} active tabs`);
-      activeTabs.forEach(tab => {
-        console.log('Active tab data-tab:', tab.getAttribute('data-tab'));
-      });
-      
-      // Check tab content cache
-      console.log('Tab content cache keys:', Object.keys(tabContentCache));
-      
-      // Log custom tab details
-      customTabs.forEach((tab, idx) => {
-        const tabId = tab.getAttribute('data-tab');
-        console.log(`Custom tab ${idx} - data-tab:`, tabId);
-        console.log(`Custom tab ${idx} - has cached content:`, tabContentCache[tabId] ? 'Yes' : 'No');
-        console.log(`Custom tab ${idx} - has click handler:`, tab._clickHandlerAttached ? 'Yes' : 'No');
-      });
-      
-      console.log('========================');
-    }
-    
-    // Call debug function on clicking any tab
-    document.querySelectorAll('.sidebar-icon').forEach(function(tab) {
-      tab.addEventListener('click', function() {
-        setTimeout(debugTabs, 500);
-      });
-    });
-    
-    // --- Refactor dynamic tab creation to use cache-aware loader ---
+      // --- Refactor dynamic tab creation to use cache-aware loader ---
     // Function to re-initialize tab click handlers
     function refreshTabClickHandlers() {
-      console.log('Refreshing tab click handlers');
       setupSidebarTabClicks();
-      
-      // Specifically check for any dynamic tabs without handlers
+        // Specifically check for any dynamic tabs without handlers
       document.querySelectorAll('.custom-sidebar-tab .sidebar-icon').forEach(function(btn) {
         const tabId = btn.getAttribute('data-tab');
         if (tabId && !btn._clickHandlerAttached) {
@@ -768,12 +626,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
           });
           btn._clickHandlerAttached = true;
-          console.log('Added click handler to dynamic tab:', tabId);
         }
       });
     }
-    
-    // Monitor sidebar for any new tabs added
+      // Monitor sidebar for any new tabs added
     function setupSidebarObserver() {
       const observer = new MutationObserver(function(mutations) {
         // Check for added nodes that might be tabs
@@ -791,7 +647,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         if (tabsAdded) {
-          console.log('New tabs detected in sidebar, refreshing click handlers');
           setTimeout(refreshTabClickHandlers, 100);
         }
       });
@@ -802,7 +657,6 @@ document.addEventListener('DOMContentLoaded', function() {
           childList: true,
           subtree: false
         });
-        console.log('Sidebar observer set up');
       }
     }
 
